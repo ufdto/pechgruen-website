@@ -1,0 +1,99 @@
+---
+const siteTitle = "Pechgrün";
+---
+
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{siteTitle}</title>
+    <meta name="description" content="Pechgrün – eine ruhige, sammelnde Website über Ort, Landschaft und Spuren." />
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="wrap">
+        <div class="brand">Pechgrün</div>
+      </div>
+    </header>
+
+    <main>
+      <!-- HERO / PANORAMA -->
+      <section class="hero">
+        <div class="wrap">
+          <h1 class="hero-title">Pechgrün</h1>
+          <p class="hero-subtitle">Landschaft · Spuren · Erinnerung</p>
+          <div class="hero-image" aria-label="Panorama-Platzhalter"></div>
+        </div>
+      </section>
+
+      <!-- ÜBERBLICK (noch ohne Text) -->
+      <section class="section">
+        <div class="wrap">
+          <h2>Worum es hier geht</h2>
+          <p class="muted">
+            (Platzhalter – hier kommt später ein kurzer Einstieg und danach eine etwas ausführlichere Beschreibung.)
+          </p>
+        </div>
+      </section>
+
+      <!-- EINSTIEG: HALDE & VERSCHÜTTUNG -->
+      <section class="section">
+        <div class="wrap">
+          <h2>Halde &amp; Verschüttung</h2>
+          <p class="muted">
+            (Platzhalter – hier führen wir später von der Landschaft in die Geschichte.)
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <small class="muted">© {new Date().getFullYear()} Pechgrün</small>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  :global(html, body) { margin: 0; padding: 0; }
+  :global(body) {
+    font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+    line-height: 1.6;
+    background: #fafafa;
+    color: #111;
+  }
+
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 20px; }
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    backdrop-filter: blur(8px);
+    background: rgba(250, 250, 250, 0.85);
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+  .brand { padding: 14px 0; font-size: 16px; letter-spacing: 0.02em; }
+
+  .hero { padding: 48px 0 28px; }
+  .hero-title { margin: 0; font-size: 44px; font-weight: 600; letter-spacing: 0.01em; }
+  .hero-subtitle { margin: 10px 0 22px; color: rgba(0,0,0,0.65); }
+
+  .hero-image {
+    height: 360px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(0,0,0,0.08), rgba(0,0,0,0.02));
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+
+  .section { padding: 34px 0; }
+  h2 { margin: 0 0 10px; font-size: 22px; font-weight: 600; }
+  .muted { color: rgba(0,0,0,0.6); margin: 0; }
+
+  .site-footer {
+    padding: 26px 0 50px;
+    border-top: 1px solid rgba(0,0,0,0.08);
+  }
+</style>
