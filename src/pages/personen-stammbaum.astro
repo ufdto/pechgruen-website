@@ -1,0 +1,40 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PersonenRecherche from "../components/PersonenRecherche.astro";
+
+export const chronik = {
+  title: "Personen-Stammbaum",
+  subtitle: "Recherche-Werkzeug (Udos Stammbaum)",
+  date: "2025-12-22",
+  bereich: "Recherche",
+  href: "/personen-stammbaum",
+  order: 1,
+};
+---
+
+<BaseLayout title="Personen-Stammbaum">
+  <PersonenRecherche
+    pageTitle="Personen-Stammbaum"
+    personsUrl="/data/pechgruen-ged.csv"
+    housesUrl="/data/haeuser.csv"
+  >
+    <p>
+      Diese Seite ist ein <strong>Recherche-Werkzeug</strong> auf Basis von <strong>Udos Stammbaum</strong>.
+      Jede Zeile entspricht einem <strong>Datensatz</strong> im gleichen Tabellenformat wie beim Einwohnermeldebuch,
+      aber die Quelle ist hier der Stammbaum-Export (Pechgrün/Neuhäuser-Fokus) – nicht das historische Register.
+    </p>
+
+    <h2 class="subhead">Hauskennungen (P…, N…, K…)</h2>
+
+    <ul>
+      <li><strong>P</strong> = Pechgrün</li>
+      <li><strong>N</strong> = Neuhäuser (seit <strong>1924</strong> eingemeindet)</li>
+      <li><strong>K</strong> = Kösteldorf (Wehrmühle) – z. B. <strong>K027</strong></li>
+    </ul>
+
+    <p>
+      Falls keine Hausnummer bekannt ist, wird <strong>P000</strong> bzw. <strong>N000</strong> als Platzhalter verwendet.
+      Ein Klick auf die Hauskennung öffnet das Haus-Popup, ein Klick in die Zeile das Personen-Popup.
+    </p>
+  </PersonenRecherche>
+</BaseLayout>

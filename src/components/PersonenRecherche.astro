@@ -1,0 +1,520 @@
+---
+const {
+  pageTitle = "Personen-Recherche",
+  personsUrl,
+  housesUrl = "/data/haeuser.csv",
+} = Astro.props;
+
+if (!personsUrl) {
+  throw new Error("PersonenRecherche.astro: personsUrl prop is required.");
+}
+---
+
+<article class="content personen-page">
+  <!-- EIN Scrollbereich für alles -->
+  <div class="scrollpane" aria-label={pageTitle}>
+    <h1>{pageTitle}</h1>
+
+    <!-- Intro via Slot -->
+    <div class="personen-intro">
+      <slot />
+    </div>
+
+    <div class="status" id="status">Lade Daten …</div>
+
+    <table class="personen-table">
+      <colgroup>
+        <col class="col-haus" />
+        <col class="col-familie" />
+        <col class="col-gebname" />
+        <col class="col-vornamen" />
+        <col class="col-gebdatum" />
+        <col class="col-gebort" />
+      </colgroup>
+
+      <thead>
+        <tr id="thead"></tr>
+      </thead>
+
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- Modal -->
+  <div class="modalOverlay" id="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal">
+      <h3 id="modalTitle"></h3>
+      <div class="kv" id="modalKV"></div>
+      <div class="closeRow">
+        <button class="btn" id="modalClose" type="button">Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <style is:global>
+    /* EIN Scrollcontainer: passt in den Viewport der Seite (BaseLayout paddings abziehen) */
+    .personen-page .scrollpane {
+      height: calc(100vh - 4.75rem); /* BaseLayout main padding: 1.75rem + 3rem */
+      overflow: auto;
+      min-height: 0;
+
+      padding-right: 14px; /* macOS Overlay scrollbar */
+      scrollbar-gutter: stable;
+    }
+
+    .personen-page .personen-intro {
+      margin: 0.2rem 0 0.8rem 0;
+      color: rgba(0, 0, 0, 0.75);
+      line-height: 1.45;
+    }
+
+    .personen-page .personen-intro p {
+      margin: 0 0 0.7rem;
+    }
+
+    .personen-page .personen-intro .subhead {
+      margin: 0.4rem 0 0.45rem;
+      font-size: 1.05rem;
+      line-height: 1.2;
+    }
+
+    .personen-page .personen-intro ul {
+      margin: 0.15rem 0 0.7rem 1.1rem;
+      padding: 0;
+    }
+
+    .personen-page .personen-intro li {
+      margin: 0.2rem 0;
+    }
+
+    .personen-page .status {
+      font-size: 0.95rem;
+      color: rgba(0, 0, 0, 0.55);
+      margin: 0 0 0.75rem 0;
+    }
+
+    .personen-page table.personen-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 0.98rem;
+    }
+
+    .personen-page th,
+    .personen-page td {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.10);
+      text-align: left;
+      vertical-align: top;
+      padding: 0.35rem 0.5rem;
+    }
+
+    /* Filter-Header bleibt sticky im EINEN Scrollcontainer */
+    .personen-page thead th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #fff;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+    }
+
+    .personen-page .headcell {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      min-width: 0;
+    }
+
+    .personen-page .headtitle {
+      font-weight: 650;
+      font-size: 0.92rem;
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .personen-page .headfilter {
+      width: 100%;
+      box-sizing: border-box;
+      font-size: 0.92rem;
+      padding: 0.38rem 0.45rem;
+      border: 1px solid rgba(0, 0, 0, 0.18);
+      border-radius: 10px;
+      outline: none;
+      background: #fff;
+    }
+
+    .personen-page .headfilter:focus {
+      border-color: rgba(0, 0, 0, 0.35);
+    }
+
+    .personen-page tbody td {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .personen-page tbody tr:hover {
+      background: rgba(0, 0, 0, 0.03);
+    }
+
+    /* Haus-Link: NIE underline */
+    .personen-page .houseLink,
+    .personen-page .houseLink:hover,
+    .personen-page .houseLink:active,
+    .personen-page .houseLink:focus {
+      cursor: pointer;
+      text-decoration: none !important;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        "Liberation Mono", "Courier New", monospace;
+    }
+
+    /* Spaltenbreiten */
+    .personen-page col.col-haus     { width: 8%;  }
+    .personen-page col.col-familie  { width: 18%; }
+    .personen-page col.col-gebname  { width: 18%; }
+    .personen-page col.col-vornamen { width: 18%; }
+    .personen-page col.col-gebdatum { width: 13%; }
+    .personen-page col.col-gebort   { width: 25%; }
+
+    /* Modal */
+    .personen-page .modalOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 2000;
+    }
+
+    .personen-page .modal {
+      background: #fff;
+      padding: 16px;
+      max-width: 520px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .personen-page .modal h3 {
+      margin: 0 0 10px;
+      font-size: 1.05rem;
+    }
+
+    .personen-page .kv {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 8px 10px;
+      font-size: 0.96rem;
+    }
+
+    .personen-page .k {
+      color: rgba(0, 0, 0, 0.55);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .personen-page .v {
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .personen-page .closeRow {
+      margin-top: 12px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .personen-page .btn {
+      border: 1px solid rgba(0, 0, 0, 0.18);
+      background: #fff;
+      padding: 0.45rem 0.7rem;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    .personen-page .btn:hover {
+      background: rgba(0, 0, 0, 0.06);
+    }
+  </style>
+
+  <script type="module" define:vars={{ personsUrl, housesUrl }}>
+    const URL_PERSONS = personsUrl;
+    const URL_HOUSES  = housesUrl;
+
+    const COLUMNS = [
+      { key: "Haus",         title: "Haus",         type: "house" },
+      { key: "Familienname", title: "Familienname" },
+      { key: "Geburtsname",  title: "Geburtsname" },
+      { key: "Vornamen",     title: "Vornamen" },
+      { key: "Geburtsdatum", title: "Geburtsdatum" },
+      { key: "Geburtsort",   title: "Geburtsort" },
+    ];
+
+    const PERSON_POPUP_ORDER = [
+      { key: "Haus",         title: "Haus" },
+      { key: "Familienname", title: "Familienname" },
+      { key: "Geburtsname",  title: "Geburtsname" },
+      { key: "Vornamen",     title: "Vornamen" },
+      { key: "Geburtsdatum", title: "Geburtsdatum" },
+      { key: "Geburtsort",   title: "Geburtsort" },
+      { key: "Sterbedatum",  title: "Sterbedatum" },
+      { key: "Sterbeort",    title: "Sterbeort" },
+      { key: "Bemerkungen",  title: "Bemerkungen" },
+    ];
+
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let cur = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        const next = text[i + 1];
+
+        if (ch === '"' && inQuotes && next === '"') {
+          cur += '"';
+          i++;
+        } else if (ch === '"') {
+          inQuotes = !inQuotes;
+        } else if (ch === "," && !inQuotes) {
+          row.push(cur);
+          cur = "";
+        } else if ((ch === "\n" || ch === "\r") && !inQuotes) {
+          if (ch === "\r" && next === "\n") i++;
+          row.push(cur);
+          rows.push(row);
+          row = [];
+          cur = "";
+        } else {
+          cur += ch;
+        }
+      }
+
+      if (cur.length || row.length) {
+        row.push(cur);
+        rows.push(row);
+      }
+
+      if (!rows.length) return [];
+      const header = rows.shift().map((h) => h.trim());
+
+      return rows
+        .filter((r) => !(r.length === 1 && (r[0] ?? "").trim() === ""))
+        .map((r) => {
+          const o = {};
+          header.forEach((h, i) => (o[h] = (r[i] ?? "").trim()));
+          return o;
+        });
+    }
+
+    let persons = [];
+    let housesById = new Map();
+    let filters = {};
+
+    const statusEl = document.getElementById("status");
+
+    function norm(s) { return (s ?? "").toString().trim().toLowerCase(); }
+    function isMissing(v) {
+      const s = (v ?? "").toString().trim();
+      return !s || s === "?" || s === "-" || s === "–";
+    }
+    function matchesAND(val, f) {
+      if (!f) return true;
+      return norm(val).includes(norm(f));
+    }
+
+    (async function init() {
+      try {
+        const [pTxt, hTxt] = await Promise.all([
+          fetch(URL_PERSONS).then(r => {
+            if (!r.ok) throw new Error("Persons CSV not found: " + URL_PERSONS);
+            return r.text();
+          }),
+          fetch(URL_HOUSES).then(r => {
+            if (!r.ok) throw new Error("Houses CSV not found: " + URL_HOUSES);
+            return r.text();
+          })
+        ]);
+
+        persons = parseCSV(pTxt);
+        const houses = parseCSV(hTxt);
+        housesById = new Map(houses.map(h => [String(h["Haus ID"] ?? "").trim(), h]));
+
+        buildHeader();
+        render();
+      } catch (e) {
+        console.error(e);
+        if (statusEl) statusEl.textContent =
+          "Fehler beim Laden. Prüfe /public/data/*.csv und die Header-Namen.";
+      }
+    })();
+
+    function buildHeader() {
+      const tr = document.getElementById("thead");
+      if (!tr) return;
+      tr.innerHTML = "";
+
+      for (const c of COLUMNS) {
+        const th = document.createElement("th");
+
+        const wrap = document.createElement("div");
+        wrap.className = "headcell";
+
+        const title = document.createElement("div");
+        title.className = "headtitle";
+        title.textContent = c.title;
+
+        const input = document.createElement("input");
+        input.className = "headfilter";
+        input.placeholder = "Filter…";
+        input.value = filters[c.key] ?? "";
+
+        input.addEventListener("input", () => {
+          filters[c.key] = input.value;
+          render();
+        });
+
+        wrap.appendChild(title);
+        wrap.appendChild(input);
+        th.appendChild(wrap);
+
+        tr.appendChild(th);
+      }
+    }
+
+    function render() {
+      const tbody = document.getElementById("tbody");
+      if (!tbody) return;
+
+      tbody.innerHTML = "";
+
+      const rows = persons.filter(p =>
+        COLUMNS.every(c => matchesAND(p[c.key], filters[c.key]))
+      );
+
+      if (statusEl) {
+        statusEl.textContent =
+          `${rows.length.toLocaleString("de-DE")} / ${persons.length.toLocaleString("de-DE")} Einträge`;
+      }
+
+      for (const p of rows) {
+        const tr = document.createElement("tr");
+        tr.addEventListener("click", () => openPerson(p));
+
+        for (const c of COLUMNS) {
+          const td = document.createElement("td");
+          const val = (p[c.key] ?? "").toString();
+
+          if (c.key === "Haus") {
+            const span = document.createElement("span");
+            span.className = "houseLink";
+            span.textContent = val;
+            span.addEventListener("click", (e) => {
+              e.stopPropagation();
+              openHouse(val);
+            });
+            td.appendChild(span);
+          } else {
+            td.textContent = val;
+          }
+
+          tr.appendChild(td);
+        }
+
+        tbody.appendChild(tr);
+      }
+    }
+
+    const modal = document.getElementById("modal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalKV = document.getElementById("modalKV");
+    const modalClose = document.getElementById("modalClose");
+
+    function showModal(title, pairs) {
+      if (!modal || !modalTitle || !modalKV) return;
+
+      modalTitle.textContent = title;
+      modalKV.innerHTML = "";
+
+      for (const { k, v } of pairs) {
+        const dk = document.createElement("div");
+        dk.className = "k";
+        dk.textContent = k;
+
+        const dv = document.createElement("div");
+        dv.className = "v";
+        dv.textContent = (v ?? "").toString();
+
+        modalKV.appendChild(dk);
+        modalKV.appendChild(dv);
+      }
+
+      modal.style.display = "flex";
+      modal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeModal() {
+      if (!modal) return;
+      modal.style.display = "none";
+      modal.setAttribute("aria-hidden", "true");
+    }
+
+    if (modalClose) modalClose.addEventListener("click", closeModal);
+    if (modal) modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+    window.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+    function openPerson(p) {
+      const pairs = [];
+
+      const fam = (p["Familienname"] ?? "").toString().trim();
+      const geb = (p["Geburtsname"] ?? "").toString().trim();
+      const gebSame =
+        !isMissing(fam) && !isMissing(geb) && norm(fam) === norm(geb);
+
+      for (const f of PERSON_POPUP_ORDER) {
+        if (f.key === "Geburtsname" && (gebSame || isMissing(geb))) continue;
+        const raw = p?.[f.key];
+        if (isMissing(raw)) continue;
+        pairs.push({ k: f.title, v: raw });
+      }
+
+      showModal("Personen-Eintrag", pairs);
+    }
+
+    function openHouse(id) {
+      const hid = String(id ?? "").trim();
+
+      // Spezialfälle: keine Hausnummer bekannt
+      if (hid === "P000" || hid === "N000") {
+        showModal("Haus", [
+          { k: "Haus", v: hid },
+          { k: "Hinweis", v: "Für diesen Eintrag ist keine Hausnummer bekannt (Platzhalter)." },
+        ]);
+        return;
+      }
+
+      const h = housesById.get(hid);
+      if (!h) {
+        showModal("Haus", [
+          { k: "Haus", v: hid },
+          { k: "Hinweis", v: "Zu dieser Hauskennung gibt es in der Häuserdatei keinen Datensatz." },
+        ]);
+        return;
+      }
+
+      const pairs = [];
+      for (const [k, v] of Object.entries(h)) {
+        if (k === "Haus ID") continue;
+        if (isMissing(v)) continue;
+        pairs.push({ k, v });
+      }
+
+      showModal("Haus", pairs);
+    }
+  </script>
+</article>

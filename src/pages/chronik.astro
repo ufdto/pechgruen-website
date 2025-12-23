@@ -242,12 +242,6 @@ const items = [...landschaftItems, ...orteItems, ...ortschaftenItems, ...astroIt
         htmlEl.style.overflow = "hidden";
         bodyEl.style.overflow = "hidden";
 
-        // Beim Verlassen der Seite sauber zurücksetzen
-        window.addEventListener("beforeunload", () => {
-          htmlEl.style.overflow = prevHtmlOverflow;
-          bodyEl.style.overflow = prevBodyOverflow;
-        });
-
         const wheelHandler = (e: WheelEvent) => {
           // nur wenn wir tatsächlich auf der Chronik-Seite sind
           if (!document.body.contains(pageEl)) return;
@@ -260,6 +254,16 @@ const items = [...landschaftItems, ...orteItems, ...ortschaftenItems, ...astroIt
 
         // Capture + passive:false, damit preventDefault greift
         window.addEventListener("wheel", wheelHandler, { passive: false, capture: true });
+
+        // ✅ WICHTIG: Cleanup muss auch bei Astro client-side Navigation passieren
+        const cleanup = () => {
+          window.removeEventListener("wheel", wheelHandler, true);
+          htmlEl.style.overflow = prevHtmlOverflow;
+          bodyEl.style.overflow = prevBodyOverflow;
+        };
+
+        window.addEventListener("pagehide", cleanup, { once: true });
+        document.addEventListener("astro:before-swap", cleanup, { once: true });
       }
     </script>
   </main>

@@ -1,0 +1,207 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+// Wir nutzen die vorhandenen chronik-Exports der Textseiten,
+// damit Titel/Untertitel/Href nicht doppelt gepflegt werden müssen.
+import { chronik as aHooch } from "./a-hooch-aaf-unna-dorf.astro";
+import { chronik as meineErinnerungen } from "./meine-erinnerungen-heimatdorf-pechgruen.astro";
+
+export const chronik = {
+    title: "Übersicht",
+    subtitle:
+        "Ausgewählte Texte, Stimmen und Erinnerungen mit kurzen Kommentaren",
+    date: "2025-12-22",
+    bereich: "Texte, Stimmen und Erinnerungen",
+    href: "/texte",
+    order: -1,
+};
+
+const intro =
+    "Hier sammeln wir veröffentlichte Texte aus den Pechgrüner Erinnerungsbänden – mit kurzer Einordnung und Lesehinweisen. Die Originaltexte bleiben unverändert; die Notizen hier sind redaktionelle Hinweise.";
+
+const entries = [
+    {
+        ...meineErinnerungen,
+        author: "Erich Heinzl",
+        note: "Ein integrativer, erzählerischer Text: das Dorf, die Landschaft, Wege, Teiche und Höfe werden so beschrieben, dass man als Leser wirklich „mitgeht“. Deutlich zugänglicher und sehr bildlich – der Text verträgt einzelne, sorgfältig ausgewählte Fotos zur Abrundung (ohne Bilderzwang).",
+        tags: ["Dorfportrait", "Landschaft", "Wege", "gut lesbar"],
+        suggestion:
+            "Guter Einstiegstext für Außenstehende. Optional später mit 2–4 historischen Fotos ergänzbar.",
+    },
+    {
+        ...aHooch,
+        author: "Erich Heinzl",
+        note: "Ein stark innenperspektivischer Text: ein Feuerwerk an Namen, Hausnamen und persönlichen Zuordnungen – sehr wertvoll als persönliches Erinnerungsdokument und Personen-Porträt, aber für Außenstehende schwer zu verfolgen, wenn man die Figuren nicht bereits kennt.",
+        tags: ["Personen", "Hausnamen", "Innenperspektive", "anspruchsvoll"],
+        suggestion:
+            "Am besten lesen, wenn du bereits im Personen-/Haus-Kontext bist oder gezielt nach Familiennamen suchst.",
+    },
+];
+---
+
+<BaseLayout title={chronik.title}>
+    <article class="text-ort">
+        <header class="head">
+            <h1>{chronik.title}</h1>
+            <p class="subtitle">{chronik.subtitle}</p>
+
+            <p class="intro">{intro}</p>
+        </header>
+
+        <section class="list" aria-label="Übersicht der Texte">
+            <ul class="items">
+                {
+                    entries.map((e) => (
+                        <li class="item">
+                            <h2 class="title">
+                                <a href={e.href}>{e.title}</a>
+                            </h2>
+
+                            {e.subtitle ? (
+                                <p class="sub">{e.subtitle}</p>
+                            ) : null}
+
+                            <p class="meta">
+                                <span class="author">{e.author}</span>
+                                <span class="dot">·</span>
+                                <span class="hint">Lesehinweis</span>
+                            </p>
+
+                            <p class="note">{e.note}</p>
+
+                            {e.suggestion ? (
+                                <p class="suggestion">{e.suggestion}</p>
+                            ) : null}
+
+                            {e.tags?.length ? (
+                                <p class="tags" aria-label="Schlagwörter">
+                                    {e.tags.map((t) => (
+                                        <span class="tag">{t}</span>
+                                    ))}
+                                </p>
+                            ) : null}
+                        </li>
+                    ))
+                }
+            </ul>
+        </section>
+    </article>
+</BaseLayout>
+
+<style>
+    /* ===== Grundlayout (wie Textseiten) ===== */
+    .text-ort {
+        width: min(860px, 100%);
+        margin-left: 0;
+        margin-right: auto;
+    }
+
+    /* ===== Kopf ===== */
+    .head {
+        margin-bottom: 1.6rem;
+    }
+
+    .subtitle {
+        margin: -0.35rem 0 0.9rem 0;
+        font-size: 1.15rem;
+        line-height: 1.35;
+        color: rgba(0, 0, 0, 0.72);
+    }
+
+    .intro {
+        margin-top: 0.4rem;
+        margin-bottom: 1.4rem;
+        font-size: 0.95rem;
+        line-height: 1.55;
+        color: rgba(0, 0, 0, 0.6);
+    }
+
+    /* ===== Liste ===== */
+    .items {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .item {
+        padding: 1.2rem 0 1.4rem 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .item:first-child {
+        border-top: none;
+        padding-top: 0;
+    }
+
+    .title {
+        margin: 0 0 0.25rem 0;
+        font-size: 1.35rem;
+        line-height: 1.25;
+    }
+
+    .title a {
+        text-decoration: none;
+    }
+
+    .title a:hover {
+        text-decoration: underline;
+    }
+
+    .sub {
+        margin: 0 0 0.6rem 0;
+        font-size: 1.02rem;
+        line-height: 1.4;
+        color: rgba(0, 0, 0, 0.7);
+    }
+
+    .meta {
+        margin: 0 0 0.7rem 0;
+        font-size: 0.9rem;
+        line-height: 1.35;
+        color: rgba(0, 0, 0, 0.6);
+    }
+
+    .author {
+        font-weight: 600;
+        color: rgba(0, 0, 0, 0.7);
+    }
+
+    .dot {
+        margin: 0 0.35rem;
+        opacity: 0.6;
+    }
+
+    .hint {
+        color: rgba(0, 0, 0, 0.55);
+    }
+
+    .note {
+        margin: 0 0 0.75rem 0;
+        font-size: 1.02rem;
+        line-height: 1.75;
+    }
+
+    .suggestion {
+        margin: 0 0 0.85rem 0;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: rgba(0, 0, 0, 0.6);
+    }
+
+    .tags {
+        margin: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+    }
+
+    .tag {
+        display: inline-block;
+        font-size: 0.82rem;
+        line-height: 1;
+        padding: 0.35rem 0.5rem;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 999px;
+        color: rgba(0, 0, 0, 0.65);
+    }
+</style>

@@ -1,0 +1,147 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import textHtml from "../content/texte/a-hooch-aaf-unna-dorf.html?raw";
+
+export const chronik = {
+  title: "A Hooch aaf unna Dorf",
+  subtitle: "Ein Dorf erzählt von sich selbst",
+  date: "2025-12-21",
+  bereich: "Texte, Stimmen und Erinnerungen",
+  href: "/a-hooch-aaf-unna-dorf",
+  order: 0,
+};
+
+const author = "Erich Heinzl";
+const sourceShort =
+  "Aus: Pechgrün am Fuße des Erzgebirges – ein verschüttetes Dorf. Geschichte und Erinnerungen, Band 3 (1998), hg. von Anton Strunz und Erich Heinzl.";
+---
+
+<BaseLayout title={chronik.title}>
+  <article class="text-ort">
+    <header class="head">
+      <h1>{chronik.title}</h1>
+      <p class="subtitle">{chronik.subtitle}</p>
+
+      <p class="meta">
+        <span class="author">{author}</span>
+        <span class="dot">·</span>
+        <span class="source">{sourceShort}</span>
+      </p>
+
+      <p class="intro">
+        Ein Text aus den Pechgrüner Erinnerungsbänden.
+      </p>
+    </header>
+
+    <section class="text" lang="de" set:html={textHtml} />
+  </article>
+</BaseLayout>
+
+<style>
+  /* ===== Grundlayout ===== */
+  .text-ort {
+    width: min(860px, 100%);
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  /* ===== Kopf ===== */
+  .head {
+    margin-bottom: 1.6rem;
+  }
+
+  .subtitle {
+    margin: -0.35rem 0 0.9rem 0;
+    font-size: 1.15rem;
+    line-height: 1.35;
+    color: rgba(0, 0, 0, 0.72);
+  }
+
+  .meta {
+    margin: 0 0 0.9rem 0;
+    font-size: 0.95rem;
+    line-height: 1.35;
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  .author {
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  .dot {
+    margin: 0 0.35rem;
+    opacity: 0.6;
+  }
+
+  .intro {
+    margin-top: 0.4rem;
+    margin-bottom: 1.4rem;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: rgba(0, 0, 0, 0.55);
+  }
+
+  /* ===== Fließtext ===== */
+  .text {
+    margin-top: 1.6rem;
+    font-size: 1.08rem;
+    line-height: 1.75;
+
+    /* Buchsatz */
+    text-align: left;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+
+    /* Seitenzähler */
+    counter-reset: page;
+  }
+
+  .text :global(p) {
+    margin: 0 0 0.9rem 0;
+  }
+
+  /* ===== Abschnitt / "Seite" =====
+     Alle 5 Absätze:
+     - deutlicher Abstand
+     - feine Linie
+     - Seitenzahl rechts, oberhalb der Linie
+  */
+  .text :global(p:nth-of-type(5n + 1)) {
+    margin-top: 6rem;
+    padding-top: 1.6rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.10);
+
+    position: relative;
+    counter-increment: page;
+  }
+
+  .text :global(p:nth-of-type(5n + 1))::before {
+    content: counter(page);
+    position: absolute;
+    right: 0;
+    top: -20px;
+
+    font-size: 0.8rem;
+    line-height: 1;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.28);
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+
+    background: white;
+    padding-left: 0.5rem;
+  }
+
+  /* Erste Seite ohne Linie / Zahl */
+  .text :global(p:nth-of-type(1)) {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .text :global(p:nth-of-type(1))::before {
+    content: none;
+  }
+</style>

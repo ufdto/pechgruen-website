@@ -1,0 +1,53 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PersonenRecherche from "../components/PersonenRecherche.astro";
+
+export const chronik = {
+  title: "Personen-Einwohnermeldebuch",
+  subtitle: "Recherche-Werkzeug (Einwohnermeldebuch)",
+  date: "2025-12-22",
+  bereich: "Recherche",
+  href: "/personen-einwohnermeldebuch",
+  order: 0,
+};
+---
+
+<BaseLayout title="Personen-Einwohnermeldebuch">
+  <PersonenRecherche
+    pageTitle="Personen-Einwohnermeldebuch"
+    personsUrl="/data/einwohnermeldebuch.csv"
+    housesUrl="/data/haeuser.csv"
+  >
+    <p>
+      Diese Seite ist ein <strong>Recherche-Werkzeug</strong> zu den Menschen, die in Pechgrün
+      gemeldet waren oder in den Quellen in einem Zusammenhang mit Pechgrün auftauchen. Sie ist
+      <strong> kein Stammbaum</strong> und kein „Identitäts-System“: Jede Zeile ist ein
+      <strong> Quellen-Eintrag</strong> – also ein Datensatz so, wie er überliefert ist. Dadurch
+      kann dieselbe Person auch mehrfach oder in leicht unterschiedlichen Schreibweisen erscheinen.
+    </p>
+
+    <p>
+      Die Hauptquelle ist das <strong>Einwohnermeldebuch</strong>. Die Grundlage wurde in den
+      1960er-Jahren von <strong>Anton Strunz</strong> aus Archivunterlagen zusammengetragen.
+      Entscheidend ist aber: Diese Liste war für ihn nicht nur eine Abschrift, sondern ein
+      <strong>Arbeitsinstrument</strong>, um mit möglichst vielen ehemaligen Pechgrünern in Kontakt
+      zu bleiben. Wenn neue Informationen bekannt wurden – etwa <strong>Geburten</strong>,
+      <strong>Heiraten</strong>, <strong>Sterbefälle</strong>, <strong>Wohnortwechsel</strong> oder
+      andere Meldungen – wurde versucht, diese Angaben <strong>nachzutragen</strong>.
+    </p>
+
+    <h2 class="subhead">Hauskennungen (P…, N…, K…, D…)</h2>
+
+    <ul>
+      <li><strong>P</strong> = Pechgrün</li>
+      <li><strong>N</strong> = Neuhäuser (seit <strong>1924</strong> eingemeindet)</li>
+      <li><strong>K</strong> = Kösteldorf (Wehrmühle) – z. B. <strong>K027</strong></li>
+      <li><strong>D</strong> = Dotterwies – z. B. <strong>D062</strong>, <strong>D072</strong></li>
+    </ul>
+
+    <p>
+      Die Zahl ist die Hausnummer; führende Nullen dienen nur der Sortierung. Ein Klick auf die
+      Hauskennung öffnet das Haus-Popup, ein Klick in die Zeile das Personen-Popup.
+    </p>
+  </PersonenRecherche>
+</BaseLayout>

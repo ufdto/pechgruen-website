@@ -7,9 +7,18 @@ const landschaften = await getCollection("landschaft");
 const orte = await getCollection("orte");
 const ortschaften = await getCollection("ortschaften");
 
-// Spezielle Seiten (wie in der Chronik)
+// Spezielle Seiten
 import { chronik as luftbild1946 } from "./luftbild-1946.astro";
 import { chronik as ortschaftenUmPechgruen } from "./ortschaften/um-pechgruen.astro";
+
+// Personen
+import { chronik as personenEinwohnermeldebuch } from "./personen-einwohnermeldebuch.astro";
+import { chronik as personenStammbaum } from "./personen-stammbaum.astro";
+
+// Texte
+import { chronik as aHooch } from "./a-hooch-aaf-unna-dorf.astro";
+import { chronik as meineErinnerungen } from "./meine-erinnerungen-heimatdorf-pechgruen.astro";
+import { chronik as texteUebersicht } from "./texte.astro";
 ---
 
 <BaseLayout title="Inhalte">
@@ -19,85 +28,214 @@ import { chronik as ortschaftenUmPechgruen } from "./ortschaften/um-pechgruen.as
     Überblick über alle Themenbereiche. (Wird später automatisch wachsen.)
   </p>
 
-  <section>
-    <h2>Landschaft</h2>
+  <div class="accordion" data-accordion>
+    <!-- Landschaft -->
+    <section class="acc">
+      <button class="acc-head" type="button" aria-expanded="true">
+        <span class="acc-title">Landschaft</span>
 
-    {landschaften.length === 0 ? (
-      <p>Noch keine Einträge.</p>
-    ) : (
-      <ul>
-        {landschaften
-          .sort((a, b) => a.data.title.localeCompare(b.data.title, "de"))
-          .map((e) => (
-            <li>
-              <a href={`/landschaft/${e.slug}`}>{e.data.title}</a>
-              {e.data.subtitle ? <span> — {e.data.subtitle}</span> : null}
-            </li>
-          ))}
-      </ul>
-    )}
-  </section>
+        <span class="acc-right">
+          <span class="acc-meta">{landschaften.length.toLocaleString("de-DE")} Einträge</span>
+          <span class="acc-arrow" aria-hidden="true">▲</span>
+        </span>
+      </button>
 
-  <section>
-    <h2>Orte</h2>
+      <div class="acc-body">
+        {
+          landschaften.length === 0 ? (
+            <p>Noch keine Einträge.</p>
+          ) : (
+            <ul>
+              {landschaften
+                .sort((a, b) => a.data.title.localeCompare(b.data.title, "de"))
+                .map((e) => (
+                  <li>
+                    <a href={`/landschaft/${e.slug}`}>{e.data.title}</a>
+                    {e.data.subtitle ? <span> — {e.data.subtitle}</span> : null}
+                  </li>
+                ))}
+            </ul>
+          )
+        }
+      </div>
+    </section>
 
-    <ul>
-      <li>
-        <a href={luftbild1946.href}>{luftbild1946.title}</a>
-        {luftbild1946.subtitle ? <span> — {luftbild1946.subtitle}</span> : null}
-      </li>
+    <!-- Orte -->
+    <section class="acc">
+      <button class="acc-head" type="button" aria-expanded="true">
+        <span class="acc-title">Orte</span>
 
-      {orte
-        .sort((a, b) => a.data.title.localeCompare(b.data.title, "de"))
-        .map((e) => (
+        <span class="acc-right">
+          <span class="acc-meta">{(orte.length + 1).toLocaleString("de-DE")} Einträge</span>
+          <span class="acc-arrow" aria-hidden="true">▲</span>
+        </span>
+      </button>
+
+      <div class="acc-body">
+        <ul>
           <li>
-            <a href={`/orte/${e.slug}`}>{e.data.title}</a>
-            {e.data.subtitle ? <span> — {e.data.subtitle}</span> : null}
+            <a href={luftbild1946.href}>{luftbild1946.title}</a>
+            {luftbild1946.subtitle ? <span> — {luftbild1946.subtitle}</span> : null}
           </li>
-        ))}
-    </ul>
-  </section>
 
-  <section>
-    <h2>Ortschaften</h2>
+          {
+            orte
+              .sort((a, b) => a.data.title.localeCompare(b.data.title, "de"))
+              .map((e) => (
+                <li>
+                  <a href={`/orte/${e.slug}`}>{e.data.title}</a>
+                  {e.data.subtitle ? <span> — {e.data.subtitle}</span> : null}
+                </li>
+              ))
+          }
+        </ul>
+      </div>
+    </section>
 
-    <ul>
-      <li>
-        <a href={ortschaftenUmPechgruen.href}>{ortschaftenUmPechgruen.title}</a>
-        {ortschaftenUmPechgruen.subtitle ? (
-          <span> — {ortschaftenUmPechgruen.subtitle}</span>
-        ) : null}
-      </li>
+    <!-- Ortschaften -->
+    <section class="acc">
+      <button class="acc-head" type="button" aria-expanded="true">
+        <span class="acc-title">Ortschaften</span>
 
-      {ortschaften.length === 0 ? (
-        <li>Noch keine Einträge.</li>
-      ) : (
-        ortschaften
-          .sort((a, b) => a.data.title.localeCompare(b.data.title, "de"))
-          .map((e) => (
-            <li>
-              <a href={`/ortschaften/${e.slug}`}>{e.data.title}</a>
-              {e.data.subtitle ? <span> — {e.data.subtitle}</span> : null}
-            </li>
-          ))
-      )}
-    </ul>
-  </section>
+        <span class="acc-right">
+          <span class="acc-meta">{(ortschaften.length + 1).toLocaleString("de-DE")} Einträge</span>
+          <span class="acc-arrow" aria-hidden="true">▲</span>
+        </span>
+      </button>
 
-  <section>
+      <div class="acc-body">
+        <ul>
+          <li>
+            <a href={ortschaftenUmPechgruen.href}>{ortschaftenUmPechgruen.title}</a>
+            {ortschaftenUmPechgruen.subtitle ? (
+              <span> — {ortschaftenUmPechgruen.subtitle}</span>
+            ) : null}
+          </li>
+
+          {
+            ortschaften.length === 0 ? (
+              <li>Noch keine Einträge.</li>
+            ) : (
+              ortschaften
+                .sort((a, b) => a.data.title.localeCompare(b.data.title, "de"))
+                .map((e) => (
+                  <li>
+                    <a href={`/ortschaften/${e.slug}`}>{e.data.title}</a>
+                    {e.data.subtitle ? <span> — {e.data.subtitle}</span> : null}
+                  </li>
+                ))
+            )
+          }
+        </ul>
+      </div>
+    </section>
+
+    <!-- Personen -->
+    <section class="acc">
+      <button class="acc-head" type="button" aria-expanded="true">
+        <span class="acc-title">Personen</span>
+
+        <span class="acc-right">
+          <span class="acc-meta">2 Werkzeuge</span>
+          <span class="acc-arrow" aria-hidden="true">▲</span>
+        </span>
+      </button>
+
+      <div class="acc-body">
+        <ul>
+          <li>
+            <a href={personenEinwohnermeldebuch.href}>{personenEinwohnermeldebuch.title}</a>
+            {personenEinwohnermeldebuch.subtitle ? (
+              <span> — {personenEinwohnermeldebuch.subtitle}</span>
+            ) : null}
+          </li>
+
+          <li>
+            <a href={personenStammbaum.href}>{personenStammbaum.title}</a>
+            {personenStammbaum.subtitle ? (
+              <span> — {personenStammbaum.subtitle}</span>
+            ) : null}
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Texte -->
+    <section class="acc">
+      <button class="acc-head" type="button" aria-expanded="true">
+        <span class="acc-title">Texte, Stimmen und Erinnerungen</span>
+
+        <span class="acc-right">
+          <span class="acc-meta">3 Einträge</span>
+          <span class="acc-arrow" aria-hidden="true">▲</span>
+        </span>
+      </button>
+
+      <div class="acc-body">
+        <ul>
+          <li>
+            <a href={texteUebersicht.href}>{texteUebersicht.title}</a>
+            {texteUebersicht.subtitle ? (
+              <span> — {texteUebersicht.subtitle}</span>
+            ) : null}
+          </li>
+
+          <li>
+            <a href={meineErinnerungen.href}>{meineErinnerungen.title}</a>
+            {meineErinnerungen.subtitle ? (
+              <span> — {meineErinnerungen.subtitle}</span>
+            ) : null}
+          </li>
+
+          <li>
+            <a href={aHooch.href}>{aHooch.title}</a>
+            {aHooch.subtitle ? <span> — {aHooch.subtitle}</span> : null}
+          </li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <!-- Statisch -->
+  <section class="static-section">
     <h2>Chronik</h2>
-    <p>
-      <a href="/chronik">Zur Chronik →</a>
-    </p>
+    <p><a href="/chronik">Zur Chronik →</a></p>
   </section>
 
-  <section>
+  <section class="static-section">
     <h2>Suche</h2>
-    <p>
-      <a href="/suche">Zur Suche →</a>
-    </p>
+    <p><a href="/suche">Zur Suche →</a></p>
   </section>
 </BaseLayout>
+
+<script is:inline>
+  (() => {
+    const root = document.querySelector("[data-accordion]");
+    if (!root) return;
+
+    const sections = root.querySelectorAll(".acc");
+    sections.forEach((sec) => {
+      const btn = sec.querySelector(".acc-head");
+      const body = sec.querySelector(".acc-body");
+      const arrow = sec.querySelector(".acc-arrow");
+      if (!btn || !body || !arrow) return;
+
+      const sync = (expanded) => {
+        btn.setAttribute("aria-expanded", String(expanded));
+        body.hidden = !expanded;
+        arrow.textContent = expanded ? "▲" : "▼";
+      };
+
+      const expanded = btn.getAttribute("aria-expanded") !== "false";
+      sync(expanded);
+
+      btn.addEventListener("click", () => {
+        const isOpen = btn.getAttribute("aria-expanded") === "true";
+        sync(!isOpen);
+      });
+    });
+  })();
+</script>
 
 <style>
   .lede {
@@ -105,16 +243,75 @@ import { chronik as ortschaftenUmPechgruen } from "./ortschaften/um-pechgruen.as
     color: rgba(0, 0, 0, 0.65);
   }
 
-  section {
-    margin-top: 28px;
+  .accordion {
+    margin-top: 22px;
+    display: grid;
+    gap: 26px;
+  }
+
+  /* Button neutralisieren */
+  .acc-head {
+    all: unset;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    width: 100%;
+    box-sizing: border-box;
+    cursor: pointer;
+  }
+
+  .acc-title {
+    font-size: 1.85rem;
+    font-weight: 750;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    min-width: 0;
+  }
+
+  .acc-right {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+    flex: 0 0 auto;
+    margin-left: 14px;
+  }
+
+  .acc-meta {
+    color: rgba(0, 0, 0, 0.55);
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+
+  .acc-arrow {
+    color: rgba(0, 0, 0, 0.60);
+    font-size: 1.05rem;
+    line-height: 1;
+    width: 1.1em;
+    text-align: center;
+  }
+
+  .acc-body {
+    margin-top: 10px;
   }
 
   ul {
-    margin: 10px 0 0;
+    margin: 8px 0 0;
     padding-left: 18px;
   }
 
   li {
     margin: 6px 0;
+  }
+
+  .static-section {
+    margin-top: 28px;
+  }
+
+  .static-section h2 {
+    font-size: 1.85rem;
+    font-weight: 750;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin: 0 0 8px 0;
   }
 </style>
