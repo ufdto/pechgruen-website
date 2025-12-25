@@ -23,9 +23,9 @@ const entries = await getCollection("orte");
 const points = entries.map((e) => ({
   slug: e.slug,
   title: e.data.title as string,
-  number: e.data.number as number,
-  x: e.data.x as number,
-  y: e.data.y as number,
+  label: String((e.data as any).label ?? ""), // Textlabel, z.B. "10A"
+  x: (e.data as any).x as number,
+  y: (e.data as any).y as number,
   href: `/orte/${e.slug}`,
 }));
 ---
@@ -215,7 +215,8 @@ const points = entries.map((e) => ({
       },
     });
 
-    function makeSvgMarker(number, title, href) {
+    // Marker: deterministischer Klick + keine "Ziel-Element"-Zufälle innerhalb des SVG
+    function makeSvgMarker(label, title, href) {
       const wrap = document.createElement("a");
       wrap.href = href;
       wrap.title = title;
@@ -225,17 +226,25 @@ const points = entries.map((e) => ({
       wrap.style.pointerEvents = "auto";
       wrap.style.cursor = "pointer";
       wrap.style.textDecoration = "none";
+      wrap.style.touchAction = "manipulation";
 
-      const stop = (e) => e.stopPropagation();
-      ["mousedown", "mouseup", "click", "touchstart", "touchend"].forEach((evt) =>
-        wrap.addEventListener(evt, stop, { passive: true })
-      );
+      const go = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+        window.location.assign(href);
+      };
 
+      // capture=true: wir fangen es ab, bevor OSD es verwerten kann
+      wrap.addEventListener("pointerdown", go, true);
+      wrap.addEventListener("click", go, true);
+
+      // pointer-events:none im SVG: damit Klick immer am <a> landet
       wrap.innerHTML = `
-        <svg width="30" height="30" viewBox="0 0 30 30">
+        <svg width="30" height="30" viewBox="0 0 30 30" style="pointer-events:none;">
           <circle cx="15" cy="15" r="13" fill="#fff" stroke="#000" stroke-width="2"/>
           <text x="15" y="15" text-anchor="middle" dominant-baseline="central"
-                font-size="14" font-weight="900">${number}</text>
+                font-size="14" font-weight="900">${label}</text>
         </svg>`;
       return wrap;
     }
@@ -249,7 +258,7 @@ const points = entries.map((e) => ({
         const imgPt = new OSD.Point(p.x, p.y);
         const vpPt = item.imageToViewportCoordinates(imgPt);
         viewer.addOverlay({
-          element: makeSvgMarker(p.number, p.title, p.href),
+          element: makeSvgMarker(p.label, p.title, p.href),
           location: vpPt,
           placement: OSD.Placement.CENTER,
         });

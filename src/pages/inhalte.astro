@@ -15,48 +15,92 @@ import { chronik as ortschaftenUmPechgruen } from "./ortschaften/um-pechgruen.as
 import { chronik as personenEinwohnermeldebuch } from "./personen-einwohnermeldebuch.astro";
 import { chronik as personenStammbaum } from "./personen-stammbaum.astro";
 
-// Texte
+// Texte (Heinzl)
 import { chronik as aHooch } from "./a-hooch-aaf-unna-dorf.astro";
 import { chronik as meineErinnerungen } from "./meine-erinnerungen-heimatdorf-pechgruen.astro";
 import { chronik as texteUebersicht } from "./texte.astro";
+
+// Redelbach
+import { chronik as redelbachIndex } from "./redelbach/index.astro";
+import { chronik as redelbachSketchbook } from "./redelbach/sketchbook.astro";
+import { chronik as redelbachErinnerungen } from "./redelbach/erinnerungen.astro";
+import { chronik as redelbachGedicht } from "./redelbach/gedicht.astro";
+import { chronik as redelbachGallery } from "./redelbach/gallery.astro";
+
+const redelbachEntries = [
+  redelbachIndex,
+  redelbachSketchbook,
+  redelbachErinnerungen,
+  redelbachGedicht,
+  redelbachGallery,
+];
+
+// ---------- Landschaft: Sortierung ältester Eintrag oben ----------
+// Primär: date (aufsteigend)
+// Sekundär (bei gleichem Tag): order (aufsteigend, kleinere Zahl = älter)
+const landschaftenSorted = [...landschaften].sort((a, b) => {
+  const da = new Date(a.data.date).getTime();
+  const db = new Date(b.data.date).getTime();
+  if (da !== db) return da - db;
+
+  const oa = Number(a.data.order ?? 0);
+  const ob = Number(b.data.order ?? 0);
+  return oa - ob;
+});
 ---
 
-<BaseLayout title="Inhalte">
-  <h1>Inhalte</h1>
+<BaseLayout title="Einstieg">
+  <h1>Einstieg</h1>
+  <p class="subtitle">Spuren, die zu Pechgrün führen</p>
 
-  <p class="lede">
-    Überblick über alle Themenbereiche. (Wird später automatisch wachsen.)
-  </p>
+  <section class="intro">
+    <p>
+      Pechgrün ist verschwunden. Die Häuser sind fort, die Wege von einer
+      Abraumhalde überdeckt, die Landschaft über dem Ort neu geformt. Was
+      geblieben ist, sind Spuren – und Erinnerungen. Und selbst diese sind
+      inzwischen selten geworden.
+    </p>
+
+    <p>
+      Diese Seite ist der Einstieg in die Website. Die Bereiche darunter zeigen
+      verschiedene Spuren, die zu Pechgrün führen: über Landschaft, Orte,
+      Dokumente, Texte, Bilder und Menschen.
+    </p>
+
+    <p>
+      Wenn du zum ersten Mal hier bist, beginnt der Weg sinnvollerweise bei der
+      Landschaft. Sie ist das, was heute noch sichtbar ist – auch wenn der Ort
+      selbst verschwunden ist. Von dort führen die Spuren weiter.
+    </p>
+
+    <p>
+      Es gibt keinen festen Weg. Du kannst überall einsteigen und jederzeit
+      zurückkehren. Diese Seite ist ein Wegweiser, kein Ablaufplan.
+    </p>
+  </section>
 
   <div class="accordion" data-accordion>
     <!-- Landschaft -->
     <section class="acc">
       <button class="acc-head" type="button" aria-expanded="true">
         <span class="acc-title">Landschaft</span>
-
         <span class="acc-right">
-          <span class="acc-meta">{landschaften.length.toLocaleString("de-DE")} Einträge</span>
+          <span class="acc-meta">
+            {landschaftenSorted.length.toLocaleString("de-DE")} Einträge
+          </span>
           <span class="acc-arrow" aria-hidden="true">▲</span>
         </span>
       </button>
 
       <div class="acc-body">
-        {
-          landschaften.length === 0 ? (
-            <p>Noch keine Einträge.</p>
-          ) : (
-            <ul>
-              {landschaften
-                .sort((a, b) => a.data.title.localeCompare(b.data.title, "de"))
-                .map((e) => (
-                  <li>
-                    <a href={`/landschaft/${e.slug}`}>{e.data.title}</a>
-                    {e.data.subtitle ? <span> — {e.data.subtitle}</span> : null}
-                  </li>
-                ))}
-            </ul>
-          )
-        }
+        <ul>
+          {landschaftenSorted.map((e) => (
+            <li>
+              <a href={`/landschaft/${e.slug}`}>{e.data.title}</a>
+              {e.data.subtitle ? <span> — {e.data.subtitle}</span> : null}
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
 
@@ -64,9 +108,10 @@ import { chronik as texteUebersicht } from "./texte.astro";
     <section class="acc">
       <button class="acc-head" type="button" aria-expanded="true">
         <span class="acc-title">Orte</span>
-
         <span class="acc-right">
-          <span class="acc-meta">{(orte.length + 1).toLocaleString("de-DE")} Einträge</span>
+          <span class="acc-meta">
+            {(orte.length + 1).toLocaleString("de-DE")} Einträge
+          </span>
           <span class="acc-arrow" aria-hidden="true">▲</span>
         </span>
       </button>
@@ -78,16 +123,14 @@ import { chronik as texteUebersicht } from "./texte.astro";
             {luftbild1946.subtitle ? <span> — {luftbild1946.subtitle}</span> : null}
           </li>
 
-          {
-            orte
-              .sort((a, b) => a.data.title.localeCompare(b.data.title, "de"))
-              .map((e) => (
-                <li>
-                  <a href={`/orte/${e.slug}`}>{e.data.title}</a>
-                  {e.data.subtitle ? <span> — {e.data.subtitle}</span> : null}
-                </li>
-              ))
-          }
+          {orte
+            .sort((a, b) => a.data.title.localeCompare(b.data.title, "de"))
+            .map((e) => (
+              <li>
+                <a href={`/orte/${e.slug}`}>{e.data.title}</a>
+                {e.data.subtitle ? <span> — {e.data.subtitle}</span> : null}
+              </li>
+            ))}
         </ul>
       </div>
     </section>
@@ -96,9 +139,10 @@ import { chronik as texteUebersicht } from "./texte.astro";
     <section class="acc">
       <button class="acc-head" type="button" aria-expanded="true">
         <span class="acc-title">Ortschaften</span>
-
         <span class="acc-right">
-          <span class="acc-meta">{(ortschaften.length + 1).toLocaleString("de-DE")} Einträge</span>
+          <span class="acc-meta">
+            {(ortschaften.length + 1).toLocaleString("de-DE")} Einträge
+          </span>
           <span class="acc-arrow" aria-hidden="true">▲</span>
         </span>
       </button>
@@ -112,20 +156,14 @@ import { chronik as texteUebersicht } from "./texte.astro";
             ) : null}
           </li>
 
-          {
-            ortschaften.length === 0 ? (
-              <li>Noch keine Einträge.</li>
-            ) : (
-              ortschaften
-                .sort((a, b) => a.data.title.localeCompare(b.data.title, "de"))
-                .map((e) => (
-                  <li>
-                    <a href={`/ortschaften/${e.slug}`}>{e.data.title}</a>
-                    {e.data.subtitle ? <span> — {e.data.subtitle}</span> : null}
-                  </li>
-                ))
-            )
-          }
+          {ortschaften
+            .sort((a, b) => a.data.title.localeCompare(b.data.title, "de"))
+            .map((e) => (
+              <li>
+                <a href={`/ortschaften/${e.slug}`}>{e.data.title}</a>
+                {e.data.subtitle ? <span> — {e.data.subtitle}</span> : null}
+              </li>
+            ))}
         </ul>
       </div>
     </section>
@@ -134,7 +172,6 @@ import { chronik as texteUebersicht } from "./texte.astro";
     <section class="acc">
       <button class="acc-head" type="button" aria-expanded="true">
         <span class="acc-title">Personen</span>
-
         <span class="acc-right">
           <span class="acc-meta">2 Werkzeuge</span>
           <span class="acc-arrow" aria-hidden="true">▲</span>
@@ -143,19 +180,8 @@ import { chronik as texteUebersicht } from "./texte.astro";
 
       <div class="acc-body">
         <ul>
-          <li>
-            <a href={personenEinwohnermeldebuch.href}>{personenEinwohnermeldebuch.title}</a>
-            {personenEinwohnermeldebuch.subtitle ? (
-              <span> — {personenEinwohnermeldebuch.subtitle}</span>
-            ) : null}
-          </li>
-
-          <li>
-            <a href={personenStammbaum.href}>{personenStammbaum.title}</a>
-            {personenStammbaum.subtitle ? (
-              <span> — {personenStammbaum.subtitle}</span>
-            ) : null}
-          </li>
+          <li><a href={personenEinwohnermeldebuch.href}>{personenEinwohnermeldebuch.title}</a></li>
+          <li><a href={personenStammbaum.href}>{personenStammbaum.title}</a></li>
         </ul>
       </div>
     </section>
@@ -164,7 +190,6 @@ import { chronik as texteUebersicht } from "./texte.astro";
     <section class="acc">
       <button class="acc-head" type="button" aria-expanded="true">
         <span class="acc-title">Texte, Stimmen und Erinnerungen</span>
-
         <span class="acc-right">
           <span class="acc-meta">3 Einträge</span>
           <span class="acc-arrow" aria-hidden="true">▲</span>
@@ -173,39 +198,35 @@ import { chronik as texteUebersicht } from "./texte.astro";
 
       <div class="acc-body">
         <ul>
-          <li>
-            <a href={texteUebersicht.href}>{texteUebersicht.title}</a>
-            {texteUebersicht.subtitle ? (
-              <span> — {texteUebersicht.subtitle}</span>
-            ) : null}
-          </li>
+          <li><a href={texteUebersicht.href}>{texteUebersicht.title}</a></li>
+          <li><a href={meineErinnerungen.href}>{meineErinnerungen.title}</a></li>
+          <li><a href={aHooch.href}>{aHooch.title}</a></li>
+        </ul>
+      </div>
+    </section>
 
-          <li>
-            <a href={meineErinnerungen.href}>{meineErinnerungen.title}</a>
-            {meineErinnerungen.subtitle ? (
-              <span> — {meineErinnerungen.subtitle}</span>
-            ) : null}
-          </li>
+    <!-- Karl Redelbach -->
+    <section class="acc">
+      <button class="acc-head" type="button" aria-expanded="true">
+        <span class="acc-title">Karl Redelbach</span>
+        <span class="acc-right">
+          <span class="acc-meta">{redelbachEntries.length} Einträge</span>
+          <span class="acc-arrow" aria-hidden="true">▲</span>
+        </span>
+      </button>
 
-          <li>
-            <a href={aHooch.href}>{aHooch.title}</a>
-            {aHooch.subtitle ? <span> — {aHooch.subtitle}</span> : null}
-          </li>
+      <div class="acc-body">
+        <ul>
+          {redelbachEntries.map((e) => (
+            <li>
+              <a href={e.href}>{e.title}</a>
+              {e.subtitle ? <span> — {e.subtitle}</span> : null}
+            </li>
+          ))}
         </ul>
       </div>
     </section>
   </div>
-
-  <!-- Statisch -->
-  <section class="static-section">
-    <h2>Chronik</h2>
-    <p><a href="/chronik">Zur Chronik →</a></p>
-  </section>
-
-  <section class="static-section">
-    <h2>Suche</h2>
-    <p><a href="/suche">Zur Suche →</a></p>
-  </section>
 </BaseLayout>
 
 <script is:inline>
@@ -238,9 +259,15 @@ import { chronik as texteUebersicht } from "./texte.astro";
 </script>
 
 <style>
-  .lede {
-    margin-top: 10px;
-    color: rgba(0, 0, 0, 0.65);
+  .subtitle {
+    margin: 0.25rem 0 1.25rem;
+    font-size: 1.15rem;
+    opacity: 0.8;
+  }
+
+  .intro {
+    max-width: 860px;
+    margin-bottom: 2rem;
   }
 
   .accordion {
@@ -249,7 +276,6 @@ import { chronik as texteUebersicht } from "./texte.astro";
     gap: 26px;
   }
 
-  /* Button neutralisieren */
   .acc-head {
     all: unset;
     display: flex;
@@ -283,7 +309,7 @@ import { chronik as texteUebersicht } from "./texte.astro";
   }
 
   .acc-arrow {
-    color: rgba(0, 0, 0, 0.60);
+    color: rgba(0, 0, 0, 0.6);
     font-size: 1.05rem;
     line-height: 1;
     width: 1.1em;
@@ -301,17 +327,5 @@ import { chronik as texteUebersicht } from "./texte.astro";
 
   li {
     margin: 6px 0;
-  }
-
-  .static-section {
-    margin-top: 28px;
-  }
-
-  .static-section h2 {
-    font-size: 1.85rem;
-    font-weight: 750;
-    line-height: 1.1;
-    letter-spacing: -0.01em;
-    margin: 0 0 8px 0;
   }
 </style>

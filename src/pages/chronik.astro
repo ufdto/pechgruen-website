@@ -2,8 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 
-const fmtDate = (d: Date) =>
-  d.toLocaleDateString("sv-SE", { timeZone: "UTC" });
+const fmtDate = (d: Date) => d.toLocaleDateString("sv-SE", { timeZone: "UTC" });
 
 // 1) Landschaft
 const entriesLandschaft = await getCollection("landschaft");
@@ -62,7 +61,7 @@ const pageModules = import.meta.glob("./**/*.astro", { eager: true }) as Record<
 
 const astroItems = Object.entries(pageModules)
   .filter(
-    ([path]) => !path.endsWith("/chronik.astro") && path !== "./chronik.astro"
+    ([path]) => !path.endsWith("/chronik.astro") && path !== "./chronik.astro",
   )
   .map(([, mod]) => mod?.chronik)
   .filter(Boolean)
@@ -79,7 +78,12 @@ const astroItems = Object.entries(pageModules)
   .filter((x) => x.title && x.href && !Number.isNaN(x.date.getTime()));
 
 // 5) Merge + Sort
-const items = [...landschaftItems, ...orteItems, ...ortschaftenItems, ...astroItems]
+const items = [
+  ...landschaftItems,
+  ...orteItems,
+  ...ortschaftenItems,
+  ...astroItems,
+]
   .slice()
   .sort((a, b) => {
     const ta = a.date.getTime();
@@ -90,16 +94,27 @@ const items = [...landschaftItems, ...orteItems, ...ortschaftenItems, ...astroIt
   });
 ---
 
-<BaseLayout title="Chronik">
+<BaseLayout title="Entstehung">
   <main class="chronik-page">
     <div class="chronik-top">
-      <h1>Chronik</h1>
+      <h1>Entstehung</h1>
+      <p class="subtitle">Eine lebende Website – neueste Seiten oben, alle gezielt auffindbar</p>
 
-      <p class="hint">
-        Hier sind alle Seiten dieser Website in zeitlicher Reihenfolge gelistet (neueste oben).
-        So siehst du auf einen Blick, was seit deinem letzten Besuch neu ist. Wenn du einen älteren
-        Eintrag suchst, kannst du die Liste mit dem Filter nach Titel oder Untertitel eingrenzen.
-      </p>
+      <section class="intro">
+        <p>
+          Diese Website ist eine lebende Sammlung: Sie wächst im Laufe der Zeit
+          weiter, weil ständig neue Informationen, Funde und Ergänzungen
+          hinzukommen können. Die Seite „Entstehung“ zeigt deshalb die gesamte
+          Entwicklung der Website – alle Einträge, in zeitlicher Reihenfolge wie
+          in einem Blog (die neuesten oben). So kannst du beim Wiederkommen
+          sofort sehen, was seit deinem letzten Besuch neu hinzugekommen ist,
+          und zugleich auch ältere Inhalte wiederfinden. Da die Liste mit der
+          Zeit lang werden kann, gibt es den Filter: Er durchsucht Titel und
+          Untertitel und hilft dir, die Einträge einzugrenzen – zum Beispiel
+          nach einem Bereich wie „Landschaft“, „Orte“ oder „Ortschaften“, oder
+          nach einem Stichwort, das du im Titel oder Untertitel erwartest.
+        </p>
+      </section>
 
       <div class="filterbar" role="search">
         <label class="filterlabel" for="chronikFilter">Filtern</label>
@@ -142,31 +157,35 @@ const items = [...landschaftItems, ...orteItems, ...ortschaftenItems, ...astroIt
         </thead>
 
         <tbody>
-          {items.map((e) => {
-            const q = `${e.title} ${e.subtitle}`.toLowerCase();
-            return (
-              <tr data-q={q}>
-                <td>
-                  <a class="title-link" href={e.href}>
-                    {e.title}
-                  </a>
+          {
+            items.map((e) => {
+              const q = `${e.title} ${e.subtitle}`.toLowerCase();
+              return (
+                <tr data-q={q}>
+                  <td>
+                    <a class="title-link" href={e.href}>
+                      {e.title}
+                    </a>
 
-                  {e.subtitle ? (
-                    <div class="subtitle-inline">{e.subtitle}</div>
-                  ) : null}
-                </td>
+                    {e.subtitle ? (
+                      <div class="subtitle-inline">{e.subtitle}</div>
+                    ) : null}
+                  </td>
 
-                <td class="bereich">{e.bereich}</td>
+                  <td class="bereich">{e.bereich}</td>
 
-                <td class="date-cell">
-                  <span class="date-text">{fmtDate(e.date)}</span>
-                  {e.isUpdated ? (
-                    <span class="badge" title="Updated">↻</span>
-                  ) : null}
-                </td>
-              </tr>
-            );
-          })}
+                  <td class="date-cell">
+                    <span class="date-text">{fmtDate(e.date)}</span>
+                    {e.isUpdated ? (
+                      <span class="badge" title="Updated">
+                        ↻
+                      </span>
+                    ) : null}
+                  </td>
+                </tr>
+              );
+            })
+          }
         </tbody>
       </table>
     </div>
@@ -183,10 +202,15 @@ const items = [...landschaftItems, ...orteItems, ...ortschaftenItems, ...astroIt
         console.warn("chronikClear not found or not a button");
       }
 
-      if (inputEl instanceof HTMLInputElement && clearEl instanceof HTMLButtonElement) {
+      if (
+        inputEl instanceof HTMLInputElement &&
+        clearEl instanceof HTMLButtonElement
+      ) {
         const rows = Array.from(
-          document.querySelectorAll("table.chronik tbody tr")
-        ).filter((el): el is HTMLTableRowElement => el instanceof HTMLTableRowElement);
+          document.querySelectorAll("table.chronik tbody tr"),
+        ).filter(
+          (el): el is HTMLTableRowElement => el instanceof HTMLTableRowElement,
+        );
 
         const setClearVisible = () => {
           clearEl.style.visibility = inputEl.value ? "visible" : "hidden";
@@ -253,7 +277,10 @@ const items = [...landschaftItems, ...orteItems, ...ortschaftenItems, ...astroIt
         };
 
         // Capture + passive:false, damit preventDefault greift
-        window.addEventListener("wheel", wheelHandler, { passive: false, capture: true });
+        window.addEventListener("wheel", wheelHandler, {
+          passive: false,
+          capture: true,
+        });
 
         // ✅ WICHTIG: Cleanup muss auch bei Astro client-side Navigation passieren
         const cleanup = () => {
@@ -298,10 +325,15 @@ const items = [...landschaftItems, ...orteItems, ...ortschaftenItems, ...astroIt
     margin-bottom: 0.3rem;
   }
 
-  .hint {
-    margin: 0 0 1.1rem 0;
-    color: rgba(0, 0, 0, 0.6);
-    line-height: 1.35;
+  .subtitle {
+    margin: 0.25rem 0 1.25rem;
+    font-size: 1.15rem;
+    opacity: 0.8;
+  }
+
+  .intro {
+    max-width: 860px;
+    margin-bottom: 2rem;
   }
 
   .filterbar {
@@ -420,7 +452,7 @@ const items = [...landschaftItems, ...orteItems, ...ortschaftenItems, ...astroIt
     padding-bottom: 0.62rem;
     padding-right: 0.75rem;
     padding-left: 0.75rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.10);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     vertical-align: top;
   }
 
