@@ -1,25 +1,29 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import textHtml from "../assets/texte/meine-erinnerungen-heimatdorf-pechgruen.html?raw";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import textHtml from "../../assets/texte/erinnerungen-karl-redelbach.html?raw";
 
 export const chronik = {
-  title: "Meine Erinnerungen an unser Heimatdorf Pechgrün",
-  subtitle: "Wie es mir im Gedächtnis erhalten blieb",
-  date: "2025-12-21",
-  bereich: "Texte, Stimmen und Erinnerungen",
-  href: "/meine-erinnerungen-heimatdorf-pechgruen",
+  title: "Erinnerungen an Pechgrün",
+  subtitle: "Kindheitserinnerungen und Dorfleben",
+  date: "2025-12-23",
+  bereich: "Redelbach",
+  href: "/redelbach/erinnerungen",
   order: 1,
 };
 
-const author = "Erich Heinzl";
+const author = "Karl Redelbach";
 const sourceShort =
-  "Aus: Pechgrün am Fuße des Erzgebirges – ein verschüttetes Dorf. Geschichte und Erinnerungen, Band 2 (1993), hg. von Anton Strunz und Karl Redelbach.";
+  "Aus: Pechgrün am Fuße des Erzgebirges – ein verschüttetes Dorf. Geschichte und Erinnerungen.";
+
+const intro =
+  "Dieser Text versammelt Erinnerungen an Pechgrün in zusammenhängender Prosa. Anders als im Skizzenheft beschreibt Karl Redelbach nicht den Verfall des Dorfes aus unmittelbarer Nähe, sondern blickt aus zeitlicher Distanz auf Kindheit, Dorfleben, Wege, Orte und Landschaften zurück. Die Erinnerung folgt dabei keinem historischen Anspruch, sondern dem persönlichen Gedächtnis: ruhig, beschreibend, manchmal tastend – getragen von Nähe zum Ort und von Sprache.";
 ---
 
 <BaseLayout title={chronik.title}>
   <article class="text-ort">
     <header class="head">
       <h1>{chronik.title}</h1>
+
       <p class="subtitle">{chronik.subtitle}</p>
 
       <p class="meta">
@@ -28,6 +32,11 @@ const sourceShort =
         <span class="source">{sourceShort}</span>
       </p>
     </header>
+
+    <!-- Einleitung (Editorischer Kontext, nicht Teil des Originaltexts) -->
+    <section class="intro">
+      <p>{intro}</p>
+    </section>
 
     <section class="text" lang="de" set:html={textHtml} />
   </article>
@@ -70,12 +79,16 @@ const sourceShort =
     opacity: 0.6;
   }
 
+  /* ===== Einleitung ===== */
   .intro {
-    margin-top: 0.4rem;
-    margin-bottom: 1.4rem;
-    font-size: 0.9rem;
-    line-height: 1.4;
-    color: rgba(0, 0, 0, 0.55);
+    margin: 0 0 1.25rem 0;
+    font-size: 1.02rem;
+    line-height: 1.65;
+    color: rgba(0, 0, 0, 0.62);
+  }
+
+  .intro p {
+    margin: 0;
   }
 
   /* ===== Fließtext ===== */
@@ -84,13 +97,11 @@ const sourceShort =
     font-size: 1.08rem;
     line-height: 1.75;
 
-    /* Buchsatz */
     text-align: left;
     hyphens: auto;
     -webkit-hyphens: auto;
     -ms-hyphens: auto;
 
-    /* Seitenzähler */
     counter-reset: page;
   }
 
@@ -98,23 +109,21 @@ const sourceShort =
     margin: 0 0 0.9rem 0;
   }
 
-  /* ===== Abschnitt / "Seite" =====
-     Alle 5 Absätze:
-     - deutlicher Abstand
-     - feine Linie
-     - Seitenzahl rechts, oberhalb der Linie
-  */
-  .text :global(p:nth-of-type(5n + 1)) {
+  /* ===== Seiten (fortlaufend, stabil) ===== */
+  .text :global(section.page) {
+    position: relative;
+
     margin-top: 6rem;
     padding-top: 1.6rem;
-    border-top: 1px solid rgba(0, 0, 0, 0.10);
 
-    position: relative;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+
     counter-increment: page;
   }
 
-  .text :global(p:nth-of-type(5n + 1))::before {
+  .text :global(section.page)::before {
     content: counter(page);
+
     position: absolute;
     right: 0;
     top: -20px;
@@ -130,14 +139,21 @@ const sourceShort =
     padding-left: 0.5rem;
   }
 
-  /* Erste Seite ohne Linie / Zahl */
-  .text :global(p:nth-of-type(1)) {
+  /* Erste Seite ohne Linie / Nummer */
+  .text :global(section.page:first-child) {
     margin-top: 0;
     padding-top: 0;
     border-top: none;
   }
 
-  .text :global(p:nth-of-type(1))::before {
+  .text :global(section.page:first-child)::before {
     content: none;
+  }
+
+  /* ===== Gedichte / lyrische Einschübe ===== */
+  .text :global(.poem) {
+    margin: 1.6rem 0 1.8rem 2rem;
+    padding-left: 0;
+    max-width: 38ch;
   }
 </style>
