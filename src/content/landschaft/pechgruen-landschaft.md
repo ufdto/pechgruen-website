@@ -1,7 +1,8 @@
 ---
 title: "Pechgrün – Lage und Umgebung"
 subtitle: "Pechgrün zwischen Höhenzügen, Wegen und Tälern"
-date: 2025-12-16
+date: 2025-12-17
+order: 0
 ---
 
 <figure class="narrow">

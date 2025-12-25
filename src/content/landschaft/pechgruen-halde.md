@@ -2,7 +2,7 @@
 title: "Unter der Halde"
 subtitle: "Was vom Dorf geblieben ist – und was darüber liegt"
 date: 2025-12-17
-order: 10
+order: 2
 ---
 
 <style>

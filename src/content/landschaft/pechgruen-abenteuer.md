@@ -2,7 +2,7 @@
 title: "Das Halden-Abenteuer"
 subtitle: "Zwei Männer, sechs Tafeln, ein Felsen – und ein Name aus dem Jahr 1939"
 date: 2025-12-17
-order: 20
+order: 3
 ---
 
 Es begann, wie viele gute Geschichten beginnen: mit einer Frage.
