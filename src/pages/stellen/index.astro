@@ -15,8 +15,8 @@ export const chronik = {
 const tileSource = "/tiles/luftbild-1946/1946.dzi";
 
 // Fixes Start-Zentrum (Haus 24 Koordinaten)
-const centerPoint = { x: 4063, y: 6986 };
-const startZoomFactor = 5.0;
+const centerPoint = { x: 5400, y: 5050 };
+const startZoomFactor = 2.0;
 
 // Marker aus src/content/stellen/*.md
 const entries = await getCollection("stellen");
@@ -31,7 +31,7 @@ const points = entries.map((e) => ({
 }));
 ---
 
-<BaseLayout title="Stellen &amp; Gebäude">
+<BaseLayout title="Stellen & Gebäude">
   <main style="max-width:980px;margin:0 auto;">
     <h1 style="margin:0 0 0.35rem;">Stellen &amp; Gebäude</h1>
     <p style="margin:0 0 1rem; opacity:0.8;">
@@ -43,25 +43,29 @@ const points = entries.map((e) => ({
       <h2>Einordnung</h2>
 
       <p>
-        Diese Seite zeigt eine <strong>außergewöhnliche Luftaufnahme des Dorfes Pechgrün</strong>,
-        aufgenommen im <strong>Mai 1946</strong>. Außergewöhnlich ist dieses Bild nicht nur wegen
-        seiner für die Zeit bemerkenswerten technischen Qualität, sondern vor allem wegen des
-        <strong>Zeitpunkts</strong>, zu dem es entstanden ist: nach der Zwangsaussiedlung eines
-        großen Teils der Bevölkerung, aber noch bevor baulicher Verfall, Abriss und spätere
-        Zerstörung einsetzten.
+        Diese Seite zeigt eine <strong
+          >außergewöhnliche Luftaufnahme des Dorfes Pechgrün</strong
+        >, aufgenommen im <strong>Mai 1946</strong>. Außergewöhnlich ist dieses
+        Bild nicht nur wegen seiner für die Zeit bemerkenswerten technischen
+        Qualität, sondern vor allem wegen des
+        <strong>Zeitpunkts</strong>, zu dem es entstanden ist: nach der
+        Zwangsaussiedlung eines großen Teils der Bevölkerung, aber noch bevor
+        baulicher Verfall, Abriss und spätere Zerstörung einsetzten.
       </p>
 
       <p>
-        Frühere Luftaufnahmen dieses Ortes existieren nicht. Erst im Verlauf des Zweiten Weltkriegs
-        begann die systematische Luftbildfotografie. Spätere Aufnahmen hätten Pechgrün bereits
-        verändert gezeigt. Dass ausgerechnet für das Jahr 1946 eine derart detailreiche Aufnahme
-        erhalten ist, stellt einen <strong>seltenen Glücksfall</strong> dar.
+        Frühere Luftaufnahmen dieses Ortes existieren nicht. Erst im Verlauf des
+        Zweiten Weltkriegs begann die systematische Luftbildfotografie. Spätere
+        Aufnahmen hätten Pechgrün bereits verändert gezeigt. Dass ausgerechnet
+        für das Jahr 1946 eine derart detailreiche Aufnahme erhalten ist, stellt
+        einen <strong>seltenen Glücksfall</strong> dar.
       </p>
 
       <p>
-        Zusammen mit der ungewöhnlich hohen Bildqualität wird diese Aufnahme zu einem
-        <strong>Schlüsselbild</strong>: Sie erlaubt es, das Dorf konkret zu sehen – so, wie es war,
-        als dort noch Menschen lebten.
+        Zusammen mit der ungewöhnlich hohen Bildqualität wird diese Aufnahme zu
+        einem
+        <strong>Schlüsselbild</strong>: Sie erlaubt es, das Dorf konkret zu
+        sehen – so, wie es war, als dort noch Menschen lebten.
       </p>
     </section>
 
@@ -121,7 +125,8 @@ const points = entries.map((e) => ({
           pointer-events:none;
         "
         aria-hidden="true"
-      ></div>
+      >
+      </div>
     </div>
 
     <!-- GLOBAL: Overlays klickbar -->
@@ -137,26 +142,31 @@ const points = entries.map((e) => ({
       <h2>Hausnummern und Marker</h2>
 
       <p>
-        Die Hausnummern sind <strong>fest in das Luftbild eingetragen</strong>. Sie folgen der
-        historischen Nummerierung des Dorfes und lassen sich nicht ein- oder ausblenden.
-        Grundlage der Zuordnung ist ein <strong>handschriftlicher Ortsplan von Karl Redelbach</strong>,
-        der für die Pechgrüner Erinnerungsbücher angefertigt wurde. Erst dieser Plan macht es möglich,
-        die schriftlichen Quellen räumlich zu verorten.
+        Die Hausnummern sind <strong>fest in das Luftbild eingetragen</strong>.
+        Sie folgen der historischen Nummerierung des Dorfes und lassen sich
+        nicht ein- oder ausblenden. Grundlage der Zuordnung ist ein <strong
+          >handschriftlicher Ortsplan von Karl Redelbach</strong
+        >, der für die Pechgrüner Erinnerungsbücher angefertigt wurde. Erst
+        dieser Plan macht es möglich, die schriftlichen Quellen räumlich zu
+        verorten.
       </p>
 
       <p>
-        Zusätzlich gibt es <strong>Marker</strong>, die du über den Button rechts unten
-        <strong>explizit einschalten</strong> kannst. Diese Marker kennzeichnen Stellen und Gebäude, zu
-        denen bereits <strong>Detailseiten mit Zusatzinformationen</strong> existieren
-        (z.&nbsp;B. aus Erinnerungsbüchern, Einwohnermeldebuch und Kirchenbüchern). Ein Klick auf
-        einen Marker führt direkt zur entsprechenden Detailseite.
+        Zusätzlich gibt es <strong>Marker</strong>, die du über den Button
+        rechts unten
+        <strong>explizit einschalten</strong> kannst. Diese Marker kennzeichnen Stellen
+        und Gebäude, zu denen bereits <strong
+          >Detailseiten mit Zusatzinformationen</strong
+        > existieren (z.&nbsp;B. aus Erinnerungsbüchern, Einwohnermeldebuch und Kirchenbüchern).
+        Ein Klick auf einen Marker führt direkt zur entsprechenden Detailseite.
       </p>
 
       <p>
-        Die Detailseiten entstehen <strong>nach und nach</strong>. Ihre Erstellung erfordert Zeit
-        und sorgfältige Arbeit; deshalb sind bislang nur einige Punkte mit eigenen Seiten versehen.
-        Mit fortschreitender Arbeit werden Schritt für Schritt weitere Detailseiten hinzukommen –
-        und damit auch weitere Marker im Luftbild sichtbar werden.
+        Die Detailseiten entstehen <strong>nach und nach</strong>. Ihre
+        Erstellung erfordert Zeit und sorgfältige Arbeit; deshalb sind bislang
+        nur einige Punkte mit eigenen Seiten versehen. Mit fortschreitender
+        Arbeit werden Schritt für Schritt weitere Detailseiten hinzukommen – und
+        damit auch weitere Marker im Luftbild sichtbar werden.
       </p>
     </section>
 
@@ -170,7 +180,8 @@ const points = entries.map((e) => ({
         </li>
         <li>
           <strong>Verschieben (Panning):</strong>
-          <span style="white-space:nowrap;">Maus:</span> linke Taste gedrückt halten und ziehen &nbsp;–&nbsp;
+          <span style="white-space:nowrap;">Maus:</span> linke Taste gedrückt halten
+          und ziehen &nbsp;–&nbsp;
           <span style="white-space:nowrap;">Trackpad:</span> gedrückt halten und ziehen
         </li>
         <li>
@@ -243,9 +254,9 @@ const points = entries.map((e) => ({
       // pointer-events:none im SVG: damit Klick immer am <a> landet
       wrap.innerHTML = `
         <svg width="30" height="30" viewBox="0 0 30 30" style="pointer-events:none;">
-          <circle cx="15" cy="15" r="13" fill="#fff" stroke="#000" stroke-width="2"/>
-          <text x="15" y="15" text-anchor="middle" dominant-baseline="central"
-                font-size="14" font-weight="900">${label}</text>
+          <circle cx="15" cy="15" r="13" fill="#fff" stroke="#000" stroke-width="1"/>
+          <text x="15" y="15" text-anchor="middle" dominant-baseline="middle" dx="-0.03em" dy="0.11em"
+                font-size="12" font-weight="500">${label}</text>
         </svg>`;
       return wrap;
     }
@@ -276,7 +287,9 @@ const points = entries.map((e) => ({
     }
 
     const toggleBtn = document.getElementById("toggle-markers");
-    toggleBtn.addEventListener("click", () => setMarkersVisible(!markersVisible));
+    toggleBtn.addEventListener("click", () =>
+      setMarkersVisible(!markersVisible),
+    );
 
     // Versteckte Funktion: Option/Alt + Klick -> Bildkoordinaten anzeigen (und kopieren)
     let toastTimer = null;

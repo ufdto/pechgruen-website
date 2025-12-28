@@ -1393,7 +1393,7 @@ Zeile,Haus,Familienname,Geburtsname,Vornamen,Geburtsdatum,Geburtsort,Sterbedatum
 1392,P000,Lorenz,Lorenz,Anna Maria,13.09.1795,"Pechgrün (Smolnice, CZ)",12.04.1862,?,
 1393,P018,Lorenz,Lorenz,Maria Anna,13.07.1798,"Pechgrün #18 (Smolnice, CZ)",?,?,
 1394,P040,Kunstmann,Mörtl,Anna Mathilde,21.03.1844,"Kofel #23 (Kobelec, CZ)",03.03.1889,"Pechgrün #40 (Smolnice, CZ)",
-1395,P065,),),Joseph,17.01.1870,"Kofel #23 (Kobelec, CZ)",?,?,"Fabrikarbeiter, Kapseldreher"
+1395,P065,Kunstmann,Kunstmann,Joseph,17.01.1870,"Kofel #23 (Kobelec, CZ)",?,?,"Fabrikarbeiter, Kapseldreher"
 1396,P040,Kunstmann,Kunstmann,Berta,14.10.1871,"Pechgrün #40 (Smolnice, CZ)",EST 1952,?,
 1397,P040,Kunstmann,Kunstmann,Karl,26.04.1875,"Pechgrün #40 (Smolnice, CZ)",10.09.1876,"Pechgrün #40 (Smolnice, CZ)",Bergarbeiter
 1398,P040,Kunstmann,Kunstmann,Anna,24.01.1885,"Pechgrün #40 (Smolnice, CZ)",23.02.1889,"Pechgrün #40 (Smolnice, CZ)",
@@ -1509,7 +1509,7 @@ Zeile,Haus,Familienname,Geburtsname,Vornamen,Geburtsdatum,Geburtsort,Sterbedatum
 1508,P056,Heinrich,Kreuzer,Renate,26.02.1923,"Pechgrün #56 (Smolnice, CZ)",?,?,
 1509,P056,Roßmeisl,Löbl,Ottilia,13.07.1848,"Kührberg #58 (Mezihorská, CZ)",07.09.1906,"Pechgrün #56 (Smolnice, CZ)",
 1510,P018,Dürrschmidt,Dürrschmidt,Theresia,03.12.1870,"Pechgrün #18 (Smolnice, CZ)",10.09.1925,"Elbogen (Loket, CZ)",
-1511,P056,),Roßmeisl,Margaretha,05.11.1893,"Pechgrün #56 (Smolnice, CZ)",24.06.1965,?,
+1511,P056,Bauer,Roßmeisl,Margaretha,05.11.1893,"Pechgrün #56 (Smolnice, CZ)",24.06.1965,?,
 1512,P076,Roßmeisl,Roßmeisl,Wenzl,16.01.1922,"Pechgrün #76 (Smolnice, CZ)",19.01.1922,"Pechgrün #76 (Smolnice, CZ)",
 1513,P076,Roßmeisl,Roßmeisl,Karl,16.01.1922,"Pechgrün #76 (Smolnice, CZ)",20.01.1922,"Pechgrün #76 (Smolnice, CZ)",
 1514,P076,Roßmeisl,Roßmeisl,Josef,18.09.1920,"Pechgrün #76 (Smolnice, CZ)",MAR 1945,gefallen,
@@ -1858,8 +1858,8 @@ Zeile,Haus,Familienname,Geburtsname,Vornamen,Geburtsdatum,Geburtsort,Sterbedatum
 1857,P054,Kraus,Kraus,Herta,15.07.1931,"Pechgrün #54 (Smolnice, CZ)",?,?,
 1858,P054,Kraus,Kraus,Hildegard,07.03.1942,"Pechgrün #54 (Smolnice, CZ)",?,?,
 1859,P055,Lorenz,Lorenz,Richard,01.09.1921,"Pechgrün #55 (Smolnice, CZ)",?,?,
-1860,P065,),Richter,Maria,18.01.1879,"Frühbuß #120 (Přebuz, CZ)",28.12.1913,"Pechgrün #65 (Smolnice, CZ)",
-1861,P069,),Richter,Maria,12.11.1872,"Trinksaifen #179 (Rudné, CZ)",07.07.1899,"Pechgrün #69 (Smolnice, CZ)",
+1860,P065,Kunstmann,Richter,Maria,18.01.1879,"Frühbuß #120 (Přebuz, CZ)",28.12.1913,"Pechgrün #65 (Smolnice, CZ)",
+1861,P069,Kunstmann,Richter,Maria,12.11.1872,"Trinksaifen hsla(195, 80%, 33%, 1.00) (Rudné, CZ)",07.07.1899,"Pechgrün #69 (Smolnice, CZ)",
 1862,P021,Lenk,Lorenz,Amalie,13.02.1903,"Pechgrün #21 (Smolnice, CZ)",13.07.1993,"Bad Berneck, Fichtelgebirge, Oberfranken (D)",
 1863,P062,Lenk,Lenk,Gerlinde,29.07.1934,"Pechgrün #62 (Smolnice, CZ)",?,?,
 1864,P063,Götz,Dotzauer,Albine,18.01.1902,"Pechgrün #63 (Smolnice, CZ)",?,?,
@@ -2715,7 +2715,7 @@ Zeile,Haus,Familienname,Geburtsname,Vornamen,Geburtsdatum,Geburtsort,Sterbedatum
 2714,N001,Kraus,Kraus,Ottilia,25.12.1843,"Kösteldorf #9 (Rájec, CZ)",?,?,
 2715,N014,Lorenz,Lorenz,Karl,ca. 1900,?,?,?,
 2716,P069,Mörtl,Mörtl,Robert,01.05.1904,"Schwarzenbach (Černava, CZ)",?,?,
-2717,P056,),),Karl,28.06.1891,"Voigtsgrün #25 (Fojtov, CZ)",01.09.1963,?,
+2717,P056,Bauer,Bauer,Karl,28.06.1891,"Voigtsgrün #25 (Fojtov, CZ)",01.09.1963,?,
 2718,P000,Bauer,Bauer,Ferdinand,08.04.1879,"Schwarzenbach #63 (Černava, CZ)",07.11.1942,"Pechgrün (Smolnice, CZ)",
 2719,P000,Bauer,Lill,Theresia,14.05.1880,"Kösteldorf #35 (Rájec, CZ)",?,?,
 2720,P004,Mörtl,Mörtl,Karl,14.12.1882,"Pechgrün #4 (Smolnice, CZ)",05.06.1886,"Pechgrün #4 (Smolnice, CZ)",
@@ -2835,7 +2835,7 @@ Zeile,Haus,Familienname,Geburtsname,Vornamen,Geburtsdatum,Geburtsort,Sterbedatum
 2834,P032,Gröger,Gröger,Werner Herbert,24.06.1941,"Pechgrün #32 (Smolnice, CZ)",?,?,
 2835,P076,Bayer,Bayer,Anton,26.08.1901,"Granesau #36 (Chranišov, CZ)",?,?,
 2836,P057,Lauber,Lauber,Otto Gerhard,01.03.1913,"Neuhammer #70 (Nové Hamry, CZ)",?,?,Fabrikarbeiter
-2837,P000,),),Franz,27.02.1936,"Pechgrün (Smolnice, CZ)",?,?,
+2837,P000,Lauber,Lauber,Franz,27.02.1936,"Pechgrün (Smolnice, CZ)",?,?,
 2838,P000,Passauer,Passauer,Alfred,27.08.1914,"Pechgrün (Smolnice, CZ)",?,?,
 2839,P043,Passauer,Siegl,Gertrud,17.04.1917,"Pechgrün #43 (Smolnice, CZ)",?,?,
 2840,P056,Kreuzer,Kreuzer,Walter,1925,"Pechgrün #56 (Smolnice, CZ)",2017,"Ernsthofen, Darmstadt - Dieburg, Hessen, Deutschland, 64 397",

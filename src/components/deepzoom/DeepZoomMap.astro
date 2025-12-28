@@ -153,9 +153,9 @@ const {
       // SVG soll keine eigenen Klicks "fangen"
       el.innerHTML = `
         <svg style="pointer-events:none" width="30" height="30" viewBox="0 0 30 30">
-          <circle style="pointer-events:none" cx="15" cy="15" r="13" fill="#fff" stroke="#000" stroke-width="2"/>
-          <text style="pointer-events:none" x="15" y="15" text-anchor="middle" dominant-baseline="central"
-                font-size="14" font-weight="900">${m.label ?? ""}</text>
+          <circle style="pointer-events:none" cx="15" cy="15" r="13" fill="#fff" stroke="#000" stroke-width="1"/>
+          <text style="pointer-events:none" x="15" y="15" text-anchor="middle" dominant-baseline="middle"
+                dx="-0.03em" dy="0.11em" font-size="12" font-weight="500">${m.label ?? ""}</text>
         </svg>`;
 
       // OSD darf nicht pannen/zoomen beim Marker-Klick
