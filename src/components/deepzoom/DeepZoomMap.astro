@@ -12,7 +12,14 @@ type Marker = {
 type StartView =
   | { type: "home" }
   | { type: "centerZoom"; x: number; y: number; zoomFactor: number }
-  | { type: "rect"; x: number; y: number; w: number; h: number; zoomFactor?: number };
+  | {
+      type: "rect";
+      x: number;
+      y: number;
+      w: number;
+      h: number;
+      zoomFactor?: number;
+    };
 
 const {
   id,
@@ -41,7 +48,8 @@ const BASE = RAW_BASE.endsWith("/") ? RAW_BASE : RAW_BASE + "/";
 const u = (p: string) => `${BASE}${p.replace(/^\/+/, "")}`;
 
 // ✅ base-safe tileSource for OSD
-const tileSourceFixed = typeof tileSource === "string" ? u(tileSource) : tileSource;
+const tileSourceFixed =
+  typeof tileSource === "string" ? u(tileSource) : tileSource;
 ---
 
 <div
@@ -55,11 +63,12 @@ const tileSourceFixed = typeof tileSource === "string" ? u(tileSource) : tileSou
     position:relative;
   `}
 >
-  {showMarkersToggle && (
-    <button
-      type="button"
-      data-dz-toggle
-      style="
+  {
+    showMarkersToggle && (
+      <button
+        type="button"
+        data-dz-toggle
+        style="
         position:absolute;
         right:6px;
         bottom:6px;
@@ -72,11 +81,12 @@ const tileSourceFixed = typeof tileSource === "string" ? u(tileSource) : tileSou
         backdrop-filter: blur(4px);
         cursor: pointer;
       "
-      aria-pressed={markersDefaultVisible}
-    >
-      Marker einblenden
-    </button>
-  )}
+        aria-pressed={markersDefaultVisible}
+      >
+        Marker einblenden
+      </button>
+    )
+  }
 
   <div
     data-dz-toast
@@ -96,7 +106,8 @@ const tileSourceFixed = typeof tileSource === "string" ? u(tileSource) : tileSou
       pointer-events:none;
     "
     aria-hidden="true"
-  ></div>
+  >
+  </div>
 </div>
 
 <!-- base-safe vendor path -->
@@ -110,7 +121,7 @@ const tileSourceFixed = typeof tileSource === "string" ? u(tileSource) : tileSou
     markersDefaultVisible,
     showMarkersToggle,
     authorMode,
-    startView
+    startView,
   }}
 >
   // @ts-ignore
@@ -118,7 +129,11 @@ const tileSourceFixed = typeof tileSource === "string" ? u(tileSource) : tileSou
   const host = document.getElementById(id);
 
   if (!host || !OSD) {
-    console.warn("DeepZoomMap: host or OpenSeadragon missing", { id, host, OSD: !!OSD });
+    console.warn("DeepZoomMap: host or OpenSeadragon missing", {
+      id,
+      host,
+      OSD: !!OSD,
+    });
   } else {
     // ✅ Pointer-events-Regel zuverlässig injizieren
     const styleId = `dz-pe-${id}`;
@@ -145,7 +160,7 @@ const tileSourceFixed = typeof tileSource === "string" ? u(tileSource) : tileSou
       wrapVertical: false,
       constrainDuringPan: true,
       visibilityRatio: 1.0,
-      zoomPerScroll: 1.02,
+      zoomPerScroll: 1.04,
       gestureSettingsMouse: {
         scrollToZoom: true,
         clickToZoom: false,
@@ -154,6 +169,12 @@ const tileSourceFixed = typeof tileSource === "string" ? u(tileSource) : tileSou
         flickEnabled: true,
       },
     });
+
+    /* ============================================================
+       DAS EINZIGE "HOME", DAS UNS INTERESSIERT:
+       -> der Zoom, den DU beim Öffnen (startView) siehst.
+       ============================================================ */
+    let BASE_ZOOM = null; // wird nach applyStartView gesetzt (einmalig)
 
     /* ---------------------------
        Tooltip-Layer (zweizeilig)
@@ -185,7 +206,14 @@ const tileSourceFixed = typeof tileSource === "string" ? u(tileSource) : tileSou
         .replaceAll("'", "&#039;");
     }
 
+    /* ============================================================
+       PINNED TOOLTIP + FREEZE (für Fly-to)
+       ============================================================ */
+    let pinned = false;
+
     function showTip(title, subtitle, clientX, clientY) {
+      if (pinned) return;
+
       const r = host.getBoundingClientRect();
       const t = title || "";
       const s = subtitle || "";
@@ -224,7 +252,98 @@ const tileSourceFixed = typeof tileSource === "string" ? u(tileSource) : tileSou
     }
 
     function hideTip() {
+      if (pinned) return;
       tip.style.display = "none";
+    }
+
+    function setFrozen(v) {
+      viewer.setMouseNavEnabled(!v);
+      host.style.cursor = v ? "default" : "";
+    }
+
+    function closePinnedTip() {
+      if (!pinned) return;
+      pinned = false;
+      tip.style.display = "none";
+      tip.style.pointerEvents = "none";
+      setFrozen(false);
+    }
+
+    function showPinnedTipAt(title, subtitle, vpPoint) {
+      const t = title || "";
+      const s = subtitle || "";
+
+      pinned = true;
+      setFrozen(true);
+
+      tip.innerHTML = `
+        <div style="display:flex; align-items:flex-start; gap:10px;">
+          <div style="min-width:0;">
+            <div style="font-size:14px; font-weight:600; line-height:1.15;">
+              ${escapeHtml(t)}
+            </div>
+            ${
+              s
+                ? `<div style="font-size:12px; opacity:0.85; line-height:1.2; margin-top:2px;">
+                     ${escapeHtml(s)}
+                   </div>`
+                : ""
+            }
+          </div>
+          <button type="button" data-tip-close
+            style="
+              all:unset;
+              cursor:pointer;
+              font-size:16px;
+              line-height:1;
+              padding:2px 6px;
+              border-radius:8px;
+              opacity:0.65;
+              user-select:none;
+            "
+            aria-label="Tooltip schließen"
+            title="Schließen"
+          >×</button>
+        </div>
+      `;
+
+      tip.style.pointerEvents = "auto";
+      tip.style.display = "block";
+
+      const r = host.getBoundingClientRect();
+      const px = viewer.viewport.pixelFromPoint(vpPoint, true);
+
+      const pad = 8;
+      let x = px.x + 14;
+      let y = px.y - 14;
+
+      tip.style.left = `${x}px`;
+      tip.style.top = `${y}px`;
+
+      const tr = tip.getBoundingClientRect();
+      const maxX = r.width - tr.width - pad;
+      const maxY = r.height - tr.height - pad;
+
+      x = Math.max(pad, Math.min(x, maxX));
+      y = Math.max(pad, Math.min(y, maxY));
+
+      tip.style.left = `${x}px`;
+      tip.style.top = `${y}px`;
+
+      const btn = tip.querySelector("[data-tip-close]");
+      if (btn) btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closePinnedTip();
+      }, { once: true });
+
+      const onDoc = (e) => {
+        if (!pinned) return;
+        if (tip.contains(e.target)) return;
+        closePinnedTip();
+        document.removeEventListener("pointerdown", onDoc, true);
+      };
+      document.addEventListener("pointerdown", onDoc, true);
     }
 
     /* -----------------------------------------
@@ -251,13 +370,16 @@ const tileSourceFixed = typeof tileSource === "string" ? u(tileSource) : tileSou
       el.setAttribute("aria-label", aria || m.label || "");
 
       if (title || subtitle) {
-        el.addEventListener("pointerenter", (e) =>
-          showTip(title, subtitle, e.clientX, e.clientY)
-        );
-        el.addEventListener("pointermove", (e) =>
-          showTip(title, subtitle, e.clientX, e.clientY)
-        );
-        el.addEventListener("pointerleave", hideTip);
+        const onMove = (e) => showTip(title, subtitle, e.clientX, e.clientY);
+        const onLeave = () => hideTip();
+
+        el.addEventListener("pointerenter", onMove);
+        el.addEventListener("pointermove", onMove);
+        el.addEventListener("pointerleave", onLeave);
+
+        el.addEventListener("mouseenter", onMove);
+        el.addEventListener("mousemove", onMove);
+        el.addEventListener("mouseleave", onLeave);
       }
 
       el.innerHTML = `
@@ -267,11 +389,15 @@ const tileSourceFixed = typeof tileSource === "string" ? u(tileSource) : tileSou
                 dx="-0.03em" dy="0.11em" font-size="12" font-weight="500">${m.label ?? ""}</text>
         </svg>`;
 
-      // OSD darf nicht pannen/zoomen beim Marker-Klick
       const stop = (e) => e.stopPropagation();
-      ["pointerdown", "pointerup", "mousedown", "mouseup", "touchstart", "touchend"].forEach((evt) =>
-        el.addEventListener(evt, stop, { passive: false })
-      );
+      [
+        "pointerdown",
+        "pointerup",
+        "mousedown",
+        "mouseup",
+        "touchstart",
+        "touchend",
+      ].forEach((evt) => el.addEventListener(evt, stop, { passive: false }));
 
       if (m.href) {
         const go = (e) => {
@@ -282,7 +408,6 @@ const tileSourceFixed = typeof tileSource === "string" ? u(tileSource) : tileSou
           window.location.assign(m.href);
         };
 
-        // capture=true: wir fangen es ab, bevor OSD es verwerten kann
         el.addEventListener("pointerdown", go, true);
         el.addEventListener("click", go, true);
       }
@@ -318,14 +443,23 @@ const tileSourceFixed = typeof tileSource === "string" ? u(tileSource) : tileSou
       }
 
       if (toggleBtn) {
-        toggleBtn.textContent = markersVisible ? "Marker ausblenden" : "Marker einblenden";
-        toggleBtn.setAttribute("aria-pressed", markersVisible ? "true" : "false");
+        toggleBtn.textContent = markersVisible
+          ? "Marker ausblenden"
+          : "Marker einblenden";
+        toggleBtn.setAttribute(
+          "aria-pressed",
+          markersVisible ? "true" : "false",
+        );
       }
     }
 
     if (toggleBtn) {
-      toggleBtn.addEventListener("click", () => setMarkersVisible(!markersVisible));
-      toggleBtn.textContent = markersVisible ? "Marker ausblenden" : "Marker einblenden";
+      toggleBtn.addEventListener("click", () =>
+        setMarkersVisible(!markersVisible),
+      );
+      toggleBtn.textContent = markersVisible
+        ? "Marker ausblenden"
+        : "Marker einblenden";
       toggleBtn.setAttribute("aria-pressed", markersVisible ? "true" : "false");
     }
 
@@ -342,7 +476,8 @@ const tileSourceFixed = typeof tileSource === "string" ? u(tileSource) : tileSou
 
     async function copy(text) {
       try {
-        if (navigator?.clipboard?.writeText) await navigator.clipboard.writeText(text);
+        if (navigator?.clipboard?.writeText)
+          await navigator.clipboard.writeText(text);
       } catch (_) {}
     }
 
@@ -373,8 +508,8 @@ const tileSourceFixed = typeof tileSource === "string" ? u(tileSource) : tileSou
       if (!item) return;
 
       const home = viewer.viewport.getHomeZoom();
-      viewer.viewport.minZoomLevel = home;
-      viewer.viewport.maxZoomLevel = home * 32;
+      viewer.viewport.minZoomLevel = home;      // wird gleich nach BASE_ZOOM gesetzt
+      viewer.viewport.maxZoomLevel = home * 64; // großzügig
 
       if (!startView || startView.type === "home") return;
 
@@ -393,7 +528,12 @@ const tileSourceFixed = typeof tileSource === "string" ? u(tileSource) : tileSou
         const vpTL = item.imageToViewportCoordinates(imgTL);
         const vpBR = item.imageToViewportCoordinates(imgBR);
 
-        const rect = new OSD.Rect(vpTL.x, vpTL.y, vpBR.x - vpTL.x, vpBR.y - vpTL.y);
+        const rect = new OSD.Rect(
+          vpTL.x,
+          vpTL.y,
+          vpBR.x - vpTL.x,
+          vpBR.y - vpTL.y,
+        );
         viewer.viewport.fitBounds(rect, true);
 
         if (typeof r.zoomFactor === "number") {
@@ -403,9 +543,107 @@ const tileSourceFixed = typeof tileSource === "string" ? u(tileSource) : tileSou
       }
     }
 
+    function waitAnimationFinish() {
+      return new Promise((resolve) => {
+        viewer.addOnceHandler("animation-finish", () => resolve());
+      });
+    }
+
+    function findMarkerById(markerId) {
+      return markers.find((m) => m.id === markerId) || null;
+    }
+
+    async function flyToWithPinnedTip(detail) {
+      if (!detail) return;
+      if (detail.mapId !== id) return;
+
+      const markerId = String(detail.id || "");
+      const x = Number(detail.x);
+      const y = Number(detail.y);
+      if (!markerId || !Number.isFinite(x) || !Number.isFinite(y)) return;
+
+      if (!markersVisible) setMarkersVisible(true);
+
+      closePinnedTip();
+      hideTip();
+      setFrozen(true);
+
+      if (!item) item = viewer.world.getItemAt(0);
+      if (!item) {
+        setFrozen(false);
+        return;
+      }
+
+      // ✅ Wenn BASE_ZOOM aus irgendeinem Grund noch nicht da ist: jetzt festnageln.
+      if (BASE_ZOOM == null) {
+        BASE_ZOOM = viewer.viewport.getZoom(true);
+      }
+
+      // ✅ Exakt: hoch = 2× so hoch wie DEIN HOME (also Zoom halbieren)
+      //          tief = 2× so tief wie DEIN HOME (also Zoom verdoppeln)
+      const zoomOut = BASE_ZOOM / 1.4;
+      const zoomIn  = BASE_ZOOM * 2.1;
+
+      // ✅ Grenzen passend zu DEINEM HOME setzen (damit nichts "ins All" kann)
+      viewer.viewport.minZoomLevel = zoomOut;
+      viewer.viewport.maxZoomLevel = Math.max(viewer.viewport.maxZoomLevel, zoomIn);
+
+      const imgPt = new OSD.Point(x, y);
+      const vpTarget = item.imageToViewportCoordinates(imgPt);
+
+      // Smoothness
+      const oldAnimX = viewer.viewport.centerSpringX.animationTime;
+      const oldAnimY = viewer.viewport.centerSpringY.animationTime;
+      const oldAnimZ = viewer.viewport.zoomSpring.animationTime;
+
+      viewer.viewport.centerSpringX.animationTime = 1.9;
+      viewer.viewport.centerSpringY.animationTime = 1.9;
+      viewer.viewport.zoomSpring.animationTime    = 1.9;
+
+      // A: Zoom-out (animiert)
+      viewer.viewport.zoomTo(zoomOut, undefined, false);
+      await waitAnimationFinish();
+
+      // B: Pan (animiert)
+      viewer.viewport.panTo(vpTarget, false);
+      await waitAnimationFinish();
+
+      // C: Zoom-in (animiert)
+      viewer.viewport.zoomTo(zoomIn, vpTarget, false);
+      await waitAnimationFinish();
+
+      viewer.viewport.centerSpringX.animationTime = oldAnimX;
+      viewer.viewport.centerSpringY.animationTime = oldAnimY;
+      viewer.viewport.zoomSpring.animationTime = oldAnimZ;
+
+      // Tooltip nach Ankunft (pinned, muss geschlossen werden)
+      const m = findMarkerById(markerId);
+      const title = m?.title || "";
+      const subtitle = m?.subtitle || "";
+      showPinnedTipAt(title, subtitle, vpTarget);
+    }
+
+    window.addEventListener("dz:flyto", (ev) => {
+      try {
+        flyToWithPinnedTip(ev.detail);
+      } catch (e) {
+        console.warn("DeepZoomMap flyTo error", e);
+        closePinnedTip();
+        setFrozen(false);
+      }
+    });
+
     viewer.addHandler("open", () => {
       applyStartView();
       setMarkersVisible(!!markersDefaultVisible);
+
+      // ✅ JETZT: "DEIN HOME" festnageln (genau das, was du beim Öffnen siehst)
+      // (applyStartView arbeitet mit immediate=true, d.h. der Zoom ist sofort gesetzt)
+      BASE_ZOOM = viewer.viewport.getZoom(true);
+
+      // ✅ Grenzen passend zu DEINEM HOME, damit 2× hoch / 2× tief immer geht
+      viewer.viewport.minZoomLevel = BASE_ZOOM / 1.4;
+      viewer.viewport.maxZoomLevel = Math.max(viewer.viewport.maxZoomLevel, BASE_ZOOM * 2.1);
     });
   }
 </script>

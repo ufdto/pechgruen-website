@@ -62,6 +62,49 @@ const geschichteSorted = [...geschichte].sort((a, b) => {
   const ob = Number(b.data.order ?? 0);
   return oa - ob;
 });
+
+/* ------------------------------------------------------------------
+   ✅ NEU: Landschaft soll auch Astro-Seiten enthalten (z.B. Flurnamen)
+   - Wir sammeln ./landschaft/*.astro, nehmen deren export const chronik,
+     filtern auf bereich === "Landschaft" und mergen das mit den MD-Entries.
+   - Ergebnis: eine einzige Landschaft-Liste in "Einstieg".
+   ------------------------------------------------------------------ */
+
+const landschaftPageModules = import.meta.glob("./landschaft/*.astro", { eager: true }) as Record<
+  string,
+  any
+>;
+
+const landschaftPages = Object.entries(landschaftPageModules)
+  .map(([, mod]) => mod?.chronik)
+  .filter(Boolean)
+  .filter((c: any) => String(c.bereich ?? "") === "Landschaft")
+  .map((c: any) => ({
+    kind: "page" as const,
+    title: String(c.title ?? ""),
+    subtitle: String(c.subtitle ?? ""),
+    date: new Date(String(c.date)), // erwartet "YYYY-MM-DD"
+    order: typeof c.order === "number" ? c.order : 0,
+    href: String(c.href ?? "#"),
+  }))
+  .filter((x) => x.title && x.href && !Number.isNaN(x.date.getTime()));
+
+const landschaftContentItems = landschaftenSorted.map((e) => ({
+  kind: "content" as const,
+  title: e.data.title as string,
+  subtitle: (e.data.subtitle as string | undefined) ?? "",
+  date: new Date(e.data.date as any),
+  order: Number(e.data.order ?? 0),
+  href: `/landschaft/${e.slug}`,
+}));
+
+// Sortierung wie bisher: ältester oben
+const landschaftCombined = [...landschaftContentItems, ...landschaftPages].sort((a, b) => {
+  const da = a.date.getTime();
+  const db = b.date.getTime();
+  if (da !== db) return da - db;
+  return (a.order ?? 0) - (b.order ?? 0);
+});
 ---
 
 <BaseLayout title="Einstieg">
@@ -101,7 +144,7 @@ const geschichteSorted = [...geschichte].sort((a, b) => {
         <span class="acc-title">Landschaft</span>
         <span class="acc-right">
           <span class="acc-meta">
-            {landschaftenSorted.length.toLocaleString("de-DE")} Einträge
+            {landschaftCombined.length.toLocaleString("de-DE")} Einträge
           </span>
           <span class="acc-arrow" aria-hidden="true">▲</span>
         </span>
@@ -109,10 +152,10 @@ const geschichteSorted = [...geschichte].sort((a, b) => {
 
       <div class="acc-body">
         <ul>
-          {landschaftenSorted.map((e) => (
+          {landschaftCombined.map((e) => (
             <li>
-              <a href={`/landschaft/${e.slug}`}>{e.data.title}</a>
-              {e.data.subtitle ? <span> — {e.data.subtitle}</span> : null}
+              <a href={e.href}>{e.title}</a>
+              {e.subtitle ? <span> — {e.subtitle}</span> : null}
             </li>
           ))}
         </ul>

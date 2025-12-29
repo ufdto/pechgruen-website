@@ -1,0 +1,502 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import DeepZoomMap from "../../components/deepzoom/DeepZoomMap.astro";
+
+// CSV (wie du es jetzt hast)
+import flurCsvRaw from "../../assets/landschaft/flurnamen-pechgruen.csv?raw";
+
+export const chronik = {
+  title: "Flurnamen rund um Pechgrün",
+  subtitle: "Topografische Karte (1964)",
+  date: "2025-12-28",
+  order: 1,
+  bereich: "Landschaft",
+  href: "/landschaft/flurnamen",
+};
+
+const tileSource = "/tiles/flurnamen-pechgruen/flurnamen-pechgruen.dzi";
+
+type FlurRow = {
+  id: string;
+  nr: number;
+  title: string;
+  subtitle: string;
+  x: number;
+  y: number;
+};
+
+function parseCSV(text: string): Record<string, string>[] {
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let cur = "";
+  let inQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+
+    if (inQuotes) {
+      if (ch === '"') {
+        if (text[i + 1] === '"') {
+          cur += '"';
+          i++;
+        } else inQuotes = false;
+      } else cur += ch;
+      continue;
+    }
+
+    if (ch === '"') {
+      inQuotes = true;
+      continue;
+    }
+    if (ch === ",") {
+      row.push(cur);
+      cur = "";
+      continue;
+    }
+    if (ch === "\n") {
+      row.push(cur);
+      rows.push(row);
+      row = [];
+      cur = "";
+      continue;
+    }
+    if (ch === "\r") continue;
+    cur += ch;
+  }
+
+  // letzte Zelle/Zeile
+  if (cur.length || row.length) {
+    row.push(cur);
+    rows.push(row);
+  }
+  if (!rows.length) return [];
+
+  const headers = rows.shift()!.map((h) => h.trim());
+  return rows
+    .filter((r) => r.some((c) => String(c).trim() !== ""))
+    .map((r) => {
+      const obj: Record<string, string> = {};
+      headers.forEach((h, idx) => (obj[h] = (r[idx] ?? "").trim()));
+      return obj;
+    });
+}
+
+function toNum(s: string): number {
+  const n = Number(String(s ?? "").trim());
+  return Number.isFinite(n) ? n : NaN;
+}
+
+const flurRows: FlurRow[] = parseCSV(flurCsvRaw)
+  .map((o) => {
+    const nr = toNum(o.nr ?? "NaN");
+    const x = toNum(o.x ?? "NaN");
+    const y = toNum(o.y ?? "NaN");
+    const idRaw = String(o.id ?? "").trim();
+    return {
+      id: idRaw || `flur-${Number.isFinite(nr) ? nr : "x"}`,
+      nr: Number.isFinite(nr) ? nr : 0,
+      title: String(o.title ?? "").trim(),
+      subtitle: String(o.subtitle ?? "").trim(),
+      x: x,
+      y: y,
+    };
+  })
+  .filter((r) => r.id && r.title && Number.isFinite(r.x) && Number.isFinite(r.y));
+
+const markers = flurRows.map((r) => ({
+  id: r.id,
+  label: String(r.nr),
+  x: r.x,
+  y: r.y,
+  title: r.title,
+  subtitle: r.subtitle,
+}));
+
+// Server-seitiger Default (Nummern)
+const flurRowsNr = flurRows
+  .slice()
+  .sort((a, b) => (a.nr !== b.nr ? a.nr - b.nr : a.title.localeCompare(b.title, "de")));
+---
+
+<BaseLayout title="Flurnamen rund um Pechgrün">
+  <main style="max-width:980px;margin:0 auto;">
+    <h1 style="margin:0 0 0.35rem;">Flurnamen rund um Pechgrün</h1>
+
+    <p style="margin:0 0 1rem; opacity:0.8;">
+      Zoombare Karte (1964) mit Flurnamen-Markierungen.
+    </p>
+
+    <DeepZoomMap
+      id="dz-flurnamen-1964"
+      tileSource={tileSource}
+      height={640}
+      markers={markers}
+      markersDefaultVisible={true}
+      showMarkersToggle={false}
+      authorMode={true}
+      startView={{
+        type: "centerZoom",
+        x: 6788,
+        y: 4419,
+        zoomFactor: 3
+      }}
+    />
+
+    <!-- ✅ ECHTE Spreadsheet-Tabelle -->
+    <section class="flur-panel" aria-label="Flurnamen-Liste">
+      <div class="flur-list" aria-label="Flurnamen (Tabelle)">
+        <table class="flur-table" role="table" aria-label="Flurnamen">
+          <colgroup>
+            <!-- Block 1 -->
+            <col class="c-nr" />
+            <col class="c-gap" />
+            <col class="c-title" />
+            <!-- Block gap -->
+            <col class="c-blockgap" />
+            <!-- Block 2 -->
+            <col class="c-nr" />
+            <col class="c-gap" />
+            <col class="c-title" />
+            <!-- Block gap -->
+            <col class="c-blockgap" />
+            <!-- Block 3 -->
+            <col class="c-nr" />
+            <col class="c-gap" />
+            <col class="c-title" />
+          </colgroup>
+
+          <tbody id="flurTbody">
+            {
+              (() => {
+                const COLS = 3;
+                const n = flurRowsNr.length;
+                const perCol = Math.ceil(n / COLS);
+                const col1 = flurRowsNr.slice(0 * perCol, 1 * perCol);
+                const col2 = flurRowsNr.slice(1 * perCol, 2 * perCol);
+                const col3 = flurRowsNr.slice(2 * perCol, 3 * perCol);
+                const rows = perCol;
+
+                return Array.from({ length: rows }, (_, i) => {
+                  const a = col1[i];
+                  const b = col2[i];
+                  const c = col3[i];
+
+                  return (
+                    <tr class="flur-tr">
+                      {/* Block 1 */}
+                      <td class="flur-td flur-nr" data-id={a?.id} data-x={a?.x} data-y={a?.y}>{a ? a.nr : ""}</td>
+                      <td class="flur-td flur-gap" data-id={a?.id} data-x={a?.x} data-y={a?.y}></td>
+                      <td class="flur-td flur-title" data-id={a?.id} data-x={a?.x} data-y={a?.y}>{a ? a.title : ""}</td>
+
+                      <td class="flur-td flur-blockgap" aria-hidden="true"></td>
+
+                      {/* Block 2 */}
+                      <td class="flur-td flur-nr" data-id={b?.id} data-x={b?.x} data-y={b?.y}>{b ? b.nr : ""}</td>
+                      <td class="flur-td flur-gap" data-id={b?.id} data-x={b?.x} data-y={b?.y}></td>
+                      <td class="flur-td flur-title" data-id={b?.id} data-x={b?.x} data-y={b?.y}>{b ? b.title : ""}</td>
+
+                      <td class="flur-td flur-blockgap" aria-hidden="true"></td>
+
+                      {/* Block 3 */}
+                      <td class="flur-td flur-nr" data-id={c?.id} data-x={c?.x} data-y={c?.y}>{c ? c.nr : ""}</td>
+                      <td class="flur-td flur-gap" data-id={c?.id} data-x={c?.x} data-y={c?.y}></td>
+                      <td class="flur-td flur-title" data-id={c?.id} data-x={c?.x} data-y={c?.y}>{c ? c.title : ""}</td>
+                    </tr>
+                  );
+                });
+              })()
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flur-foot">
+        <div class="flur-note">
+          In der Karte: Hover über Marker → Name & Beschreibung. (Klick in der Liste → Fly-to folgt.)
+        </div>
+
+        <div class="flur-toggle" role="group" aria-label="Sortierung">
+          <button type="button" class="flur-toggle-btn is-active" data-sort="nr" aria-pressed="true">
+            Nummern
+          </button>
+          <button type="button" class="flur-toggle-btn" data-sort="az" aria-pressed="false">
+            A–Z
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <style is:global>
+    .flur-panel {
+      margin-top: 0.7rem;
+    }
+
+    .flur-list {
+      max-height: 110px;
+      overflow: auto;
+      padding-right: 12px;     /* Luft für macOS Overlay-Scrollbar */
+      scrollbar-gutter: stable;
+
+      border: 0;
+      background: transparent;
+    }
+
+    .flur-table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: separate;
+      border-spacing: 0;
+
+      font-size: 12px;
+      line-height: 1.2;
+
+      /* ✅ Stellschrauben für exakte Breiten */
+      --nrw: 5ch;         /* 4 Stellen + minimal Luft */
+      --gapw: 10px;       /* Leer-Spalte im Block */
+      --blockgapw: 36px;  /* Abstand zwischen Block 1–2 und 2–3 (identisch) */
+
+      /* ✅ Titelbreite füllt exakt den restlichen Platz – symmetrisch */
+      --titlew: calc(
+        (100% - (2 * var(--blockgapw)) - (3 * (var(--nrw) + var(--gapw))))
+        / 3
+      );
+    }
+
+    .flur-table col.c-nr       { width: var(--nrw); }
+    .flur-table col.c-gap      { width: var(--gapw); }
+    .flur-table col.c-title    { width: var(--titlew); }
+    .flur-table col.c-blockgap { width: var(--blockgapw); }
+
+    .flur-td {
+      padding: 2px 0;
+      vertical-align: baseline;
+      border: none;
+      background: transparent;
+      color: inherit;
+    }
+
+    .flur-nr {
+      text-align: right;
+      opacity: 0.68;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .flur-gap {
+      cursor: pointer;
+    }
+
+    .flur-title {
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      opacity: 0.95;
+      cursor: pointer;
+      text-decoration: none !important; /* ✅ kein underline */
+    }
+
+    .flur-blockgap {
+      padding: 0 !important;
+    }
+
+    .flur-tr:hover .flur-title {
+      opacity: 1;
+    }
+
+    .flur-foot {
+      margin-top: 10px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+
+      font-size: 0.88rem;
+      line-height: 1.2;
+    }
+
+    .flur-note {
+      color: rgba(0,0,0,0.58);
+    }
+
+    .flur-toggle {
+      display: inline-flex;
+      gap: 10px;
+      margin-left: auto;
+    }
+
+    .flur-toggle-btn {
+      all: unset;
+      cursor: pointer;
+      font-size: 0.88rem;
+      line-height: 1.2;
+      color: rgba(0,0,0,0.62);
+      font-weight: 500;
+    }
+
+    .flur-toggle-btn:hover {
+      text-decoration: underline;
+    }
+
+    .flur-toggle-btn.is-active {
+      color: #111;
+      font-weight: 650;
+      text-decoration: none;
+    }
+
+    /* Responsive: 2 Blöcke / 1 Block */
+    @media (max-width: 740px) {
+      .flur-table td:nth-child(4),
+      .flur-table td:nth-child(5),
+      .flur-table td:nth-child(6),
+      .flur-table td:nth-child(7),
+      .flur-table td:nth-child(8),
+      .flur-table td:nth-child(9),
+      .flur-table td:nth-child(10),
+      .flur-table td:nth-child(11) {
+        display: none;
+      }
+    }
+
+    @media (min-width: 741px) and (max-width: 979px) {
+      .flur-table td:nth-child(8),
+      .flur-table td:nth-child(9),
+      .flur-table td:nth-child(10),
+      .flur-table td:nth-child(11) {
+        display: none;
+      }
+    }
+  </style>
+
+  <script define:vars={{ flurRows }}>
+    const tbody = document.getElementById("flurTbody");
+    const btns = Array.from(document.querySelectorAll(".flur-toggle-btn"));
+    const MAP_ID = "dz-flurnamen-1964";
+
+    const normStr = (s) => String(s ?? "").trim();
+
+    function sortNr(a, b) {
+      if (a.nr !== b.nr) return a.nr - b.nr;
+      return normStr(a.title).localeCompare(normStr(b.title), "de");
+    }
+
+    function sortAz(a, b) {
+      const c = normStr(a.title).localeCompare(normStr(b.title), "de");
+      if (c !== 0) return c;
+      return a.nr - b.nr;
+    }
+
+    function setActive(which) {
+      for (const b of btns) {
+        const is = b.getAttribute("data-sort") === which;
+        b.classList.toggle("is-active", is);
+        b.setAttribute("aria-pressed", is ? "true" : "false");
+      }
+    }
+
+    function chunkToColumns(arr, cols = 3) {
+      const n = arr.length;
+      const perCol = Math.ceil(n / cols);
+      return Array.from({ length: cols }, (_, c) => arr.slice(c * perCol, (c + 1) * perCol));
+    }
+
+    function tdAttrs(entry) {
+      if (!entry) return "";
+      return ` data-id="${entry.id}" data-x="${entry.x}" data-y="${entry.y}"`;
+    }
+
+    function escapeHtml(s) {
+      return String(s ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function render(sorted) {
+      if (!tbody) return;
+
+      const cols = chunkToColumns(sorted, 3);
+      const rows = Math.ceil(sorted.length / 3);
+
+      let html = "";
+      for (let i = 0; i < rows; i++) {
+        const a = cols[0][i];
+        const b = cols[1][i];
+        const c = cols[2][i];
+
+        html += `<tr class="flur-tr">
+          <td class="flur-td flur-nr"${tdAttrs(a)}>${a ? a.nr : ""}</td>
+          <td class="flur-td flur-gap"${tdAttrs(a)}></td>
+          <td class="flur-td flur-title"${tdAttrs(a)}>${a ? escapeHtml(a.title) : ""}</td>
+
+          <td class="flur-td flur-blockgap" aria-hidden="true"></td>
+
+          <td class="flur-td flur-nr"${tdAttrs(b)}>${b ? b.nr : ""}</td>
+          <td class="flur-td flur-gap"${tdAttrs(b)}></td>
+          <td class="flur-td flur-title"${tdAttrs(b)}>${b ? escapeHtml(b.title) : ""}</td>
+
+          <td class="flur-td flur-blockgap" aria-hidden="true"></td>
+
+          <td class="flur-td flur-nr"${tdAttrs(c)}>${c ? c.nr : ""}</td>
+          <td class="flur-td flur-gap"${tdAttrs(c)}></td>
+          <td class="flur-td flur-title"${tdAttrs(c)}>${c ? escapeHtml(c.title) : ""}</td>
+        </tr>`;
+      }
+
+      tbody.innerHTML = html;
+    }
+
+    function getSorted(which) {
+      const arr = Array.isArray(flurRows) ? flurRows.slice() : [];
+      return which === "az" ? arr.sort(sortAz) : arr.sort(sortNr);
+    }
+
+    // ----------------------------
+    // ✅ CLICK WIRING (robust)
+    // ----------------------------
+    function wireFlurTableClicks() {
+      const table = document.querySelector(".flur-table");
+      if (!table) {
+        console.warn("flurnamen: .flur-table not found (click wiring failed)");
+        return;
+      }
+
+      table.addEventListener("click", (e) => {
+        const td = e.target?.closest?.("td[data-id]");
+        if (!td) return;
+
+        const id = td.getAttribute("data-id");
+        const x = Number(td.getAttribute("data-x"));
+        const y = Number(td.getAttribute("data-y"));
+        if (!id || !Number.isFinite(x) || !Number.isFinite(y)) return;
+
+        window.dispatchEvent(new CustomEvent("dz:flyto", {
+          detail: { mapId: MAP_ID, id, x, y }
+        }));
+      });
+    }
+
+    // init
+    setActive("nr");
+    render(getSorted("nr"));
+
+    for (const b of btns) {
+      b.addEventListener("click", () => {
+        const which = b.getAttribute("data-sort") === "az" ? "az" : "nr";
+        setActive(which);
+        render(getSorted(which));
+      });
+    }
+
+    // Click wiring nach DOM ready (sicher, egal wie Astro es lädt)
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", wireFlurTableClicks);
+    } else {
+      wireFlurTableClicks();
+    }
+  </script>
+</BaseLayout>
