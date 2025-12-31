@@ -6,211 +6,216 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import { chronik as aHooch } from "./a-hooch-aaf-unna-dorf.astro";
 import { chronik as meineErinnerungen } from "./meine-erinnerungen-heimatdorf-pechgruen.astro";
 import { chronik as egerlaenderMundart } from "./egerlaendermundart.astro";
+import { chronik as redelbachTeich } from "./redelbach-teich.astro";
 
 export const chronik = {
-    title: "Übersicht",
-    subtitle:
-        "Ausgewählte Texte, Stimmen und Erinnerungen mit kurzen Kommentaren",
-    date: "2025-12-22",
-    bereich: "Texte, Stimmen und Erinnerungen",
-    href: "/texte",
-    order: -1,
+  title: "Übersicht",
+  subtitle:
+    "Ausgewählte Texte, Stimmen und Erinnerungen mit kurzen Kommentaren",
+  date: "2025-12-22",
+  bereich: "Texte, Stimmen und Erinnerungen",
+  href: "/texte",
+  order: -1,
 };
 
 const intro =
-    "Hier sammeln wir veröffentlichte Texte aus den Pechgrüner Erinnerungsbänden – ergänzt um Stimmen und audiovisuelle Zeugnisse. Die Originale bleiben unverändert; die Hinweise hier dienen der Einordnung und als Lese- oder Hörhilfe.";
+  "Hier sammeln wir veröffentlichte Texte aus den Pechgrüner Erinnerungsbänden – ergänzt um Stimmen und audiovisuelle Zeugnisse. Die Originale bleiben unverändert; die Hinweise hier dienen der Einordnung und als Lese- oder Hörhilfe.";
 
 const entries = [
-    {
-        ...meineErinnerungen,
-        author: "Erich Heinzl",
-        note: "Ein integrativer, erzählerischer Text: Dorf, Landschaft, Wege, Teiche und Höfe werden so beschrieben, dass man als Leser wirklich „mitgeht“. Deutlich zugänglicher und sehr bildlich – der Text verträgt einzelne, sorgfältig ausgewählte Fotos zur Abrundung (ohne Bilderzwang).",
-        tags: ["Dorfportrait", "Landschaft", "Wege", "gut lesbar"],
-        suggestion:
-            "Guter Einstiegstext für Außenstehende. Optional später mit 2–4 historischen Fotos ergänzbar.",
-    },
-    {
-        ...aHooch,
-        author: "Erich Heinzl",
-        note: "Ein stark innenperspektivischer Text: ein Feuerwerk an Namen, Hausnamen und persönlichen Zuordnungen – sehr wertvoll als Erinnerungsdokument und Personen-Porträt, für Außenstehende jedoch anspruchsvoll, wenn man die Figuren nicht bereits kennt.",
-        tags: ["Personen", "Hausnamen", "Innenperspektive", "anspruchsvoll"],
-        suggestion:
-            "Am besten lesen, wenn man bereits im Personen- oder Hauskontext ist oder gezielt nach Familiennamen sucht.",
-    },
-    {
-        ...egerlaenderMundart,
-        author: "Dokumentarisches Kurzporträt",
-        note: "Eine Stimme aus dem Egerland: Elfriede Šulková spricht in ihrer Mundart. Kein erklärender Text, keine Übersetzung – es geht allein um Klang, Rhythmus und Tonfall.",
-        tags: ["Mundart", "Stimme", "Originalton", "Video"],
-        suggestion:
-            "Am besten mit Ruhe anhören – der Eindruck entsteht weniger über Wörter als über den Klang der Sprache.",
-    },
+  {
+    ...meineErinnerungen,
+    author: "Erich Heinzl",
+    note: "Ein integrativer, erzählerischer Text: Dorf, Landschaft, Wege, Teiche und Höfe werden so beschrieben, dass man als Leser wirklich „mitgeht“. Deutlich zugänglicher und sehr bildlich – der Text verträgt einzelne, sorgfältig ausgewählte Fotos zur Abrundung (ohne Bilderzwang).",
+    tags: ["Dorfportrait", "Landschaft", "Wege", "gut lesbar"],
+    suggestion:
+      "Guter Einstiegstext für Außenstehende. Optional später mit 2–4 historischen Fotos ergänzbar.",
+  },
+  {
+    ...aHooch,
+    author: "Erich Heinzl",
+    note: "Ein stark innenperspektivischer Text: ein Feuerwerk an Namen, Hausnamen und persönlichen Zuordnungen – sehr wertvoll als Erinnerungsdokument und Personen-Porträt, für Außenstehende jedoch anspruchsvoll, wenn man die Figuren nicht bereits kennt.",
+    tags: ["Personen", "Hausnamen", "Innenperspektive", "anspruchsvoll"],
+    suggestion:
+      "Am besten lesen, wenn man bereits im Personen- oder Hauskontext ist oder gezielt nach Familiennamen sucht.",
+  },
+  {
+    ...egerlaenderMundart,
+    author: "Dokumentarisches Kurzporträt",
+    note: "Eine Stimme aus dem Egerland: Elfriede Šulková spricht in ihrer Mundart. Kein erklärender Text, keine Übersetzung – es geht allein um Klang, Rhythmus und Tonfall.",
+    tags: ["Mundart", "Stimme", "Originalton", "Video"],
+    suggestion:
+      "Am besten mit Ruhe anhören – der Eindruck entsteht weniger über Wörter als über den Klang der Sprache.",
+  },
+  {
+    ...redelbachTeich,
+    author: "Karl Redelbach",
+    note: "Ein dichter Erinnerungsaufsatz über die Teiche von Pechgrün als Lebens-, Spiel- und Erfahrungsraum. Naturbeobachtung, Dialekt, Fischerei und Schwimmen verbinden sich zu einem lebendigen Bild der Jugendzeit – ruhig erzählt, aber voller Szenen, Namen und Atmosphäre.",
+    tags: ["Teiche", "Jugend", "Alltag", "Natur", "Schwimmen"],
+    suggestion:
+      "Gut lesbar auch ohne Vorkenntnisse. Besonders wirkungsvoll, wenn man sich Zeit lässt und die Bilder als Teil des Erzählflusses betrachtet.",
+  },
 ];
 ---
 
 <BaseLayout title={chronik.title}>
-    <article class="text-ort">
-        <header class="head">
-            <h1>{chronik.title}</h1>
-            <p class="subtitle">{chronik.subtitle}</p>
+  <article class="text-ort">
+    <header class="head">
+      <h1>{chronik.title}</h1>
+      <p class="subtitle">{chronik.subtitle}</p>
 
-            <p class="intro">{intro}</p>
-        </header>
+      <p class="intro">{intro}</p>
+    </header>
 
-        <section class="list" aria-label="Übersicht der Texte und Stimmen">
-            <ul class="items">
-                {
-                    entries.map((e) => (
-                        <li class="item">
-                            <h2 class="title">
-                                <a href={e.href}>{e.title}</a>
-                            </h2>
+    <section class="list" aria-label="Übersicht der Texte und Stimmen">
+      <ul class="items">
+        {
+          entries.map((e) => (
+            <li class="item">
+              <h2 class="title">
+                <a href={e.href}>{e.title}</a>
+              </h2>
 
-                            {e.subtitle ? (
-                                <p class="sub">{e.subtitle}</p>
-                            ) : null}
+              {e.subtitle ? <p class="sub">{e.subtitle}</p> : null}
 
-                            <p class="meta">
-                                <span class="author">{e.author}</span>
-                                <span class="dot">·</span>
-                                <span class="hint">Hinweis</span>
-                            </p>
+              <p class="meta">
+                <span class="author">{e.author}</span>
+                <span class="dot">·</span>
+                <span class="hint">Hinweis</span>
+              </p>
 
-                            <p class="note">{e.note}</p>
+              <p class="note">{e.note}</p>
 
-                            {e.suggestion ? (
-                                <p class="suggestion">{e.suggestion}</p>
-                            ) : null}
+              {e.suggestion ? <p class="suggestion">{e.suggestion}</p> : null}
 
-                            {e.tags?.length ? (
-                                <p class="tags" aria-label="Schlagwörter">
-                                    {e.tags.map((t) => (
-                                        <span class="tag">{t}</span>
-                                    ))}
-                                </p>
-                            ) : null}
-                        </li>
-                    ))
-                }
-            </ul>
-        </section>
-    </article>
+              {e.tags?.length ? (
+                <p class="tags" aria-label="Schlagwörter">
+                  {e.tags.map((t) => (
+                    <span class="tag">{t}</span>
+                  ))}
+                </p>
+              ) : null}
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </article>
 </BaseLayout>
 
 <style>
-    /* ===== Grundlayout (wie Textseiten) ===== */
-    .text-ort {
-        width: min(860px, 100%);
-        margin-left: 0;
-        margin-right: auto;
-    }
+  /* ===== Grundlayout (wie Textseiten) ===== */
+  .text-ort {
+    width: min(860px, 100%);
+    margin-left: 0;
+    margin-right: auto;
+  }
 
-    /* ===== Kopf ===== */
-    .head {
-        margin-bottom: 1.6rem;
-    }
+  /* ===== Kopf ===== */
+  .head {
+    margin-bottom: 1.6rem;
+  }
 
-    .subtitle {
-        margin: -0.35rem 0 0.9rem 0;
-        font-size: 1.15rem;
-        line-height: 1.35;
-        color: rgba(0, 0, 0, 0.72);
-    }
+  .subtitle {
+    margin: -0.35rem 0 0.9rem 0;
+    font-size: 1.15rem;
+    line-height: 1.35;
+    color: rgba(0, 0, 0, 0.72);
+  }
 
-    .intro {
-        margin-top: 0.4rem;
-        margin-bottom: 1.4rem;
-        font-size: 0.95rem;
-        line-height: 1.55;
-        color: rgba(0, 0, 0, 0.6);
-    }
+  .intro {
+    margin-top: 0.4rem;
+    margin-bottom: 1.4rem;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: rgba(0, 0, 0, 0.6);
+  }
 
-    /* ===== Liste ===== */
-    .items {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
+  /* ===== Liste ===== */
+  .items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
 
-    .item {
-        padding: 1.2rem 0 1.4rem 0;
-        border-top: 1px solid rgba(0, 0, 0, 0.1);
-    }
+  .item {
+    padding: 1.2rem 0 1.4rem 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
 
-    .item:first-child {
-        border-top: none;
-        padding-top: 0;
-    }
+  .item:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
 
-    .title {
-        margin: 0 0 0.25rem 0;
-        font-size: 1.35rem;
-        line-height: 1.25;
-    }
+  .title {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.35rem;
+    line-height: 1.25;
+  }
 
-    .title a {
-        text-decoration: none;
-    }
+  .title a {
+    text-decoration: none;
+  }
 
-    .title a:hover {
-        text-decoration: underline;
-    }
+  .title a:hover {
+    text-decoration: underline;
+  }
 
-    .sub {
-        margin: 0 0 0.6rem 0;
-        font-size: 1.02rem;
-        line-height: 1.4;
-        color: rgba(0, 0, 0, 0.7);
-    }
+  .sub {
+    margin: 0 0 0.6rem 0;
+    font-size: 1.02rem;
+    line-height: 1.4;
+    color: rgba(0, 0, 0, 0.7);
+  }
 
-    .meta {
-        margin: 0 0 0.7rem 0;
-        font-size: 0.9rem;
-        line-height: 1.35;
-        color: rgba(0, 0, 0, 0.6);
-    }
+  .meta {
+    margin: 0 0 0.7rem 0;
+    font-size: 0.9rem;
+    line-height: 1.35;
+    color: rgba(0, 0, 0, 0.6);
+  }
 
-    .author {
-        font-weight: 600;
-        color: rgba(0, 0, 0, 0.7);
-    }
+  .author {
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.7);
+  }
 
-    .dot {
-        margin: 0 0.35rem;
-        opacity: 0.6;
-    }
+  .dot {
+    margin: 0 0.35rem;
+    opacity: 0.6;
+  }
 
-    .hint {
-        color: rgba(0, 0, 0, 0.55);
-    }
+  .hint {
+    color: rgba(0, 0, 0, 0.55);
+  }
 
-    .note {
-        margin: 0 0 0.75rem 0;
-        font-size: 1.02rem;
-        line-height: 1.75;
-    }
+  .note {
+    margin: 0 0 0.75rem 0;
+    font-size: 1.02rem;
+    line-height: 1.75;
+  }
 
-    .suggestion {
-        margin: 0 0 0.85rem 0;
-        font-size: 0.95rem;
-        line-height: 1.6;
-        color: rgba(0, 0, 0, 0.6);
-    }
+  .suggestion {
+    margin: 0 0 0.85rem 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: rgba(0, 0, 0, 0.6);
+  }
 
-    .tags {
-        margin: 0;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.4rem;
-    }
+  .tags {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
 
-    .tag {
-        display: inline-block;
-        font-size: 0.82rem;
-        line-height: 1;
-        padding: 0.35rem 0.5rem;
-        border: 1px solid rgba(0, 0, 0, 0.12);
-        border-radius: 999px;
-        color: rgba(0, 0, 0, 0.65);
-    }
+  .tag {
+    display: inline-block;
+    font-size: 0.82rem;
+    line-height: 1;
+    padding: 0.35rem 0.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 999px;
+    color: rgba(0, 0, 0, 0.65);
+  }
 </style>

@@ -21,6 +21,7 @@ import { chronik as aHooch } from "./a-hooch-aaf-unna-dorf.astro";
 import { chronik as meineErinnerungen } from "./meine-erinnerungen-heimatdorf-pechgruen.astro";
 import { chronik as texteUebersicht } from "./texte.astro";
 import { chronik as egerlaenderMundart } from "./egerlaendermundart.astro";
+import { chronik as redelbachTeich } from "./redelbach-teich.astro";
 
 // Redelbach
 import { chronik as redelbachIndex } from "./redelbach/index.astro";
@@ -281,7 +282,7 @@ const landschaftCombined = [...landschaftContentItems, ...landschaftPages].sort(
       <button class="acc-head" type="button" aria-expanded="true">
         <span class="acc-title">Texte, Stimmen und Erinnerungen</span>
         <span class="acc-right">
-          <span class="acc-meta">4 Einträge</span>
+          <span class="acc-meta">5 Einträge</span>
           <span class="acc-arrow" aria-hidden="true">▲</span>
         </span>
       </button>
@@ -292,6 +293,7 @@ const landschaftCombined = [...landschaftContentItems, ...landschaftPages].sort(
           <li><a href={egerlaenderMundart.href}>{egerlaenderMundart.title}</a></li>
           <li><a href={meineErinnerungen.href}>{meineErinnerungen.title}</a></li>
           <li><a href={aHooch.href}>{aHooch.title}</a></li>
+          <li><a href={redelbachTeich.href}>{redelbachTeich.title}</a></li>
         </ul>
       </div>
     </section>

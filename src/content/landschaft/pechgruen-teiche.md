@@ -31,6 +31,27 @@ order: 1
     margin-top: 0.5rem;
     color: #444;
   }
+
+  /* Querverweis-Blockquote kompakt: kein Luftpolster oben/unten */
+  blockquote {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  /* Absatz-Abstände im Blockquote weg */
+  blockquote p {
+    margin: 0 !important;
+  }
+  blockquote a {
+    text-decoration: none;
+  }
+
+  blockquote a:hover {
+    text-decoration: underline;
+  }
+
 </style>
 
 Die Teiche von Pechgrün existieren heute nicht mehr.  
@@ -45,8 +66,8 @@ Pechgrün gilt als deutsche Gründung. Die zerstreute Lage der Höfe deutet dara
 
 Gerade das Gebiet nördlich und nordwestlich von Chodau erforderte besondere Maßnahmen. Um das Gelände trockenzulegen und nutzbar zu machen, legten die Zisterzienser Teiche an. Diese erfüllten mehrere Aufgaben zugleich: Sie entwässerten den Boden, machten angrenzende Flächen landwirtschaftlich nutzbar und sicherten die Versorgung mit Fisch – ein wichtiger Bestandteil der klösterlichen Eigenwirtschaft.
 
-> *„Um nun das Sumpfgebiet nördlich von Chodau trockenzulegen, schritten sie zur Anlage von Teichen. Damit haben sie nicht nur ihr Ziel erreicht, sondern auch ihren Eigenverbrauch an Fischen gedeckt.“*  
-> *(Gemeindechronik Pechgrün, 1925–27)*
+> _„Um nun das Sumpfgebiet nördlich von Chodau trockenzulegen, schritten sie zur Anlage von Teichen. Damit haben sie nicht nur ihr Ziel erreicht, sondern auch ihren Eigenverbrauch an Fischen gedeckt.“_  
+> _(Gemeindechronik Pechgrün, 1925–27)_
 
 Die Pechgrüner Teiche waren damit kein beiläufiges Element der Landschaft, sondern Teil eines gezielt angelegten Systems zur Umgestaltung des Geländes. Ihre Anlage reicht vermutlich bis in das Mittelalter zurück und erfolgte über einen längeren Zeitraum.
 
@@ -54,7 +75,7 @@ Die Pechgrüner Teiche waren damit kein beiläufiges Element der Landschaft, son
 
 Obwohl die Teiche bereits seit Jahrhunderten bestanden, tauchen sie erst vergleichsweise spät auf Karten auf. Die militärische Landesaufnahme von 1765 ist die erste kartografische Darstellung, auf der die Teichlandschaft von Pechgrün überhaupt sichtbar wird.
 
-Diese Karten entstanden im Auftrag der österreichischen Armee. Offiziere kartierten das Gelände nach der Methode *à la vue*, also nach Augenschein. Die Darstellung ist nicht maßstabsgetreu im modernen Sinn, vermittelt jedoch ein zuverlässiges Bild der Landschaft, ihrer Wege, Gewässer und markanten Strukturen.
+Diese Karten entstanden im Auftrag der österreichischen Armee. Offiziere kartierten das Gelände nach der Methode _à la vue_, also nach Augenschein. Die Darstellung ist nicht maßstabsgetreu im modernen Sinn, vermittelt jedoch ein zuverlässiges Bild der Landschaft, ihrer Wege, Gewässer und markanten Strukturen.
 
 <figure class="media">
   <img src="/images/pechgruen-teiche-1765.jpg" alt="Pechgrün und Umgebung auf der militärischen Karte von 1765">
@@ -71,11 +92,11 @@ Eine ganz andere Perspektive bieten die Erinnerungen von Erich Heinzl. Er beschr
 
 Wer von Chodau nach Pechgrün kam, näherte sich dem Dorf über die Leitn. Nach dem Anstieg öffnete sich der Blick auf den Kessel von Pechgrün und das Erzgebirge, bevor die Straße wieder sanft bergab führte – direkt auf die Teiche zu.
 
-> *„Gleich nach der Einmündung der Alten Leitn kamen schon die ersten Teiche, die recht zahlreich dem Dorf vorgelagert waren; sie wurden schon im 14. Jahrhundert angelegt.“*
+> _„Gleich nach der Einmündung der Alten Leitn kamen schon die ersten Teiche, die recht zahlreich dem Dorf vorgelagert waren; sie wurden schon im 14. Jahrhundert angelegt.“_
 
 Die Teiche lagen nicht abseits, sondern bildeten den Übergang vom offenen Land zum Dorf. Zwischen ihnen erstreckten sich sumpfige Wiesen, die landwirtschaftlich kaum nutzbar waren. Die Gewässer waren stufenweise dem Gelände angepasst, so dass das Überlaufwasser jeweils in den darunterliegenden Teich floss.
 
-> *„An all diesen Teichen wuchsen Eichen, nur am Kleeteich gab es Birken.“*
+> _„An all diesen Teichen wuchsen Eichen, nur am Kleeteich gab es Birken.“_
 
 Dämme, Wege, alte Bäume und Wasserflächen prägten diesen Dorfrand. Erst nach den Teichen erreichte man die ersten Häuser von Pechgrün.
 
@@ -85,6 +106,9 @@ Dämme, Wege, alte Bäume und Wasserflächen prägten diesen Dorfrand. Erst nach
     Der Kastenteich bei Pechgrün. Blick über den Damm mit Schleudersteinen, wie er in den Erinnerungen beschrieben wird.
   </figcaption>
 </figure>
+
+> Wer die Pechgrüner Teiche nicht nur als rekonstruierte Landschaft, sondern als gelebten Alltag sehen möchte, findet in den Erinnerungen von Karl Redelbach einen persönlichen Zugang.  
+> → [Karl Redelbach: „Über unsere Teiche – Wie ich sie als junger Mensch erlebt habe“](/redelbach-teich)
 
 ## Benennung und Vermessung – 1842
 
