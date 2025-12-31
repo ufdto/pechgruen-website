@@ -70,6 +70,9 @@ const items: Item[] = order
   }));
 
 const splitLines = (s: string) => String(s || "").split(/\r?\n/);
+
+// fixed thumb size (square)
+const THUMB_SIZE = 74;
 ---
 
 <BaseLayout title={chronik.title}>
@@ -108,12 +111,254 @@ const splitLines = (s: string) => String(s || "").split(/\r?\n/);
       </p>
     ) : (
       <section class="viewer viewer-wrap" data-gallery>
+        {/* Early key buffer: so Arrow keys work even if pressed immediately */}
+        <script is:inline define:vars={{ items, PORTRAIT_H }}>
+          (() => {
+            let pendingDelta = 0;
+            let initialized = false;
+
+            const onKeyDownEarly = (e) => {
+              if (e.metaKey || e.ctrlKey || e.altKey) return;
+              if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+              e.preventDefault();
+              if (!initialized) pendingDelta += e.key === "ArrowRight" ? 1 : -1;
+            };
+
+            window.addEventListener("keydown", onKeyDownEarly, { passive: false });
+
+            const waitForReady = () => {
+              const root = document.querySelector("[data-gallery]");
+              if (!root) return requestAnimationFrame(waitForReady);
+
+              const heroFrame = root.querySelector("[data-hero-frame]");
+              const heroImg = root.querySelector("[data-hero-img]");
+              const caption = root.querySelector("[data-caption]");
+              const thumbs = Array.from(root.querySelectorAll("[data-thumb]"));
+              const stripScroll = root.querySelector(".strip-scroll");
+              const strip = root.querySelector("[data-strip]");
+              const indicator = root.querySelector("[data-thumb-indicator]");
+              const openFullBtn = root.querySelector("[data-open-full]");
+              const filterInput = root.querySelector("#houseFilter");
+              const hitCountEl = root.querySelector("[data-hit-count]");
+
+              if (
+                !(heroFrame instanceof HTMLElement) ||
+                !(heroImg instanceof HTMLImageElement) ||
+                !(caption instanceof HTMLElement) ||
+                !(stripScroll instanceof HTMLElement) ||
+                !(strip instanceof HTMLElement) ||
+                !(indicator instanceof HTMLElement) ||
+                thumbs.length === 0
+              ) {
+                return requestAnimationFrame(waitForReady);
+              }
+
+              let index = 0;
+              let filtered = items.map((_, i) => i);
+
+              const normalize = (s) => String(s ?? "").trim();
+
+              const clampInFiltered = (pos) => {
+                const n = filtered.length;
+                if (n <= 0) return 0;
+                return (pos + n) % n;
+              };
+
+              const renderCaption = (text) => {
+                caption.innerHTML = "";
+                if (!text) return;
+                String(text)
+                  .split(/\r?\n/)
+                  .forEach((line, i) => {
+                    if (i > 0) caption.appendChild(document.createElement("br"));
+                    caption.appendChild(document.createTextNode(line));
+                  });
+              };
+
+              const applyOrientationFor = (src) => {
+                const probe = new Image();
+                probe.onload = () => {
+                  const portrait = probe.naturalHeight > probe.naturalWidth;
+                  heroFrame.classList.toggle("is-portrait", portrait);
+                  heroFrame.classList.toggle("is-landscape", !portrait);
+                };
+                probe.src = src;
+              };
+
+              const openFullInNewTab = () => {
+                const it = items[index];
+                if (!it?.full) return;
+                window.open(it.full, "_blank", "noopener");
+              };
+
+              const centerThumb = (btn) => {
+                const s = stripScroll.getBoundingClientRect();
+                const b = btn.getBoundingClientRect();
+                const btnCenter = b.left - s.left + b.width / 2;
+                const target =
+                  stripScroll.scrollLeft + btnCenter - stripScroll.clientWidth / 2;
+                stripScroll.scrollTo({ left: target, behavior: "auto" });
+              };
+
+              // Selection indicator is separate element
+              const moveIndicatorTo = (i) => {
+                const btn = thumbs[i];
+                if (!(btn instanceof HTMLElement)) return;
+
+                indicator.style.opacity = "1";
+                indicator.style.transform = `translate(${btn.offsetLeft}px, ${btn.offsetTop}px)`;
+                indicator.style.width = `${btn.offsetWidth}px`;
+                indicator.style.height = `${btn.offsetHeight}px`;
+              };
+
+              const setActiveThumb = (i, wrapped = false) => {
+                thumbs.forEach((t, k) => t.classList.toggle("is-active", k === i));
+
+                moveIndicatorTo(i);
+
+                // ✅ Fundamental: pin start/end instead of centering there
+                const firstIndex = filtered.length ? filtered[0] : 0;
+                const lastIndex = filtered.length ? filtered[filtered.length - 1] : 0;
+
+                if (wrapped) {
+                  stripScroll.scrollLeft = i === firstIndex ? 0 : stripScroll.scrollWidth;
+                  return;
+                }
+
+                if (i === firstIndex) {
+                  stripScroll.scrollLeft = 0;
+                  return;
+                }
+
+                if (i === lastIndex) {
+                  stripScroll.scrollLeft = stripScroll.scrollWidth;
+                  return;
+                }
+
+                const btn = thumbs[i];
+                if (btn instanceof HTMLElement) centerThumb(btn);
+              };
+
+              const render = (i, wrapped = false) => {
+                const it = items[i];
+                if (!it) return;
+                index = i;
+
+                applyOrientationFor(it.small);
+                heroImg.src = it.small;
+                heroImg.alt = it.title;
+
+                renderCaption(it.desc);
+                setActiveThumb(i, wrapped);
+              };
+
+              thumbs.forEach((btn) =>
+                btn.addEventListener("click", () => {
+                  const i = Number(btn.dataset.index);
+                  if (!filtered.includes(i)) return;
+                  render(i);
+                })
+              );
+
+              openFullBtn?.addEventListener("click", openFullInNewTab);
+
+              const applyFilter = () => {
+                const qRaw = normalize(filterInput?.value);
+                const wantNoHouse = qRaw === "-";
+
+                filtered = [];
+
+                items.forEach((it, i) => {
+                  const houses = Array.isArray(it.houses) ? it.houses : [];
+                  const ok =
+                    qRaw === ""
+                      ? true
+                      : wantNoHouse
+                      ? houses.length === 0
+                      : houses.includes(qRaw);
+
+                  thumbs[i].style.display = ok ? "" : "none";
+                  if (ok) filtered.push(i);
+                });
+
+                if (hitCountEl) hitCountEl.textContent = String(filtered.length);
+
+                if (filtered.length > 0) {
+                  if (!filtered.includes(index)) render(filtered[0], true);
+                  else setActiveThumb(index, true);
+                } else {
+                  thumbs.forEach((t) => t.classList.remove("is-active"));
+                  indicator.style.opacity = "0";
+                }
+              };
+
+              filterInput?.addEventListener("input", applyFilter);
+
+              const onKeyDownMain = (e) => {
+                if (e.metaKey || e.ctrlKey || e.altKey) return;
+                if (filtered.length === 0) return;
+                if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+
+                e.preventDefault();
+
+                const ae = document.activeElement;
+                if (
+                  ae &&
+                  (ae.tagName === "INPUT" ||
+                    ae.tagName === "TEXTAREA" ||
+                    ae.isContentEditable)
+                ) {
+                  ae.blur?.();
+                }
+
+                const pos = filtered.indexOf(index);
+                const curPos = pos >= 0 ? pos : 0;
+
+                if (e.key === "ArrowLeft") {
+                  const wrapped = curPos === 0;
+                  const nextPos = clampInFiltered(curPos - 1);
+                  render(filtered[nextPos], wrapped);
+                } else {
+                  const wrapped = curPos === filtered.length - 1;
+                  const nextPos = clampInFiltered(curPos + 1);
+                  render(filtered[nextPos], wrapped);
+                }
+              };
+
+              window.addEventListener("keydown", onKeyDownMain, { passive: false });
+              window.addEventListener("astro:before-swap", () => {
+                window.removeEventListener("keydown", onKeyDownMain);
+                window.removeEventListener("keydown", onKeyDownEarly);
+              });
+
+              initialized = true;
+
+              render(0);
+              applyFilter();
+
+              if (pendingDelta !== 0) {
+                const steps = pendingDelta;
+                pendingDelta = 0;
+                const dirKey = steps > 0 ? "ArrowRight" : "ArrowLeft";
+                for (let k = 0; k < Math.abs(steps); k++) {
+                  onKeyDownMain({
+                    key: dirKey,
+                    metaKey: false,
+                    ctrlKey: false,
+                    altKey: false,
+                    preventDefault() {},
+                  });
+                }
+              }
+            };
+
+            waitForReady();
+          })();
+        </script>
+
         <div class="frame">
-          {/* Filter + Hinweise + Treffer: eine Zeile */}
           <div class="filterbar" aria-label="Filter">
-            <label class="filterlabel" for="houseFilter">
-              Hausnummer-Filter:
-            </label>
+            <label class="filterlabel" for="houseFilter">Hausnummer-Filter:</label>
 
             <input
               id="houseFilter"
@@ -124,10 +369,7 @@ const splitLines = (s: string) => String(s || "").split(/\r?\n/);
               placeholder=""
             />
 
-            {/* ✅ gleicher Stil wie Treffer */}
-            <div class="filtersyntax" aria-hidden="true">
-              z.B. 24, "-", ""
-            </div>
+            <div class="filtersyntax" aria-hidden="true">z.B. 24, "-", ""</div>
 
             <span class="spacer" aria-hidden="true"></span>
 
@@ -138,6 +380,8 @@ const splitLines = (s: string) => String(s || "").split(/\r?\n/);
 
           <div class="strip-scroll" aria-label="Bildauswahl">
             <div class="strip" data-strip>
+              <div class="thumb-indicator" data-thumb-indicator aria-hidden="true"></div>
+
               {items.map((it, idx) => (
                 <button
                   class={"thumb" + (idx === 0 ? " is-active" : "")}
@@ -147,8 +391,14 @@ const splitLines = (s: string) => String(s || "").split(/\r?\n/);
                   data-houses={it.houses.join(",")}
                   aria-label={`Bild wählen: ${it.id.toUpperCase()}`}
                   title={it.id.toUpperCase()}
+                  style={`width:${THUMB_SIZE}px;height:${THUMB_SIZE}px;flex:0 0 ${THUMB_SIZE}px;overflow:hidden;border-radius:10px;background:rgba(0,0,0,0.03);border:0;outline:none;box-shadow:none;padding:0;position:relative;z-index:1;`}
                 >
-                  <img src={it.small} alt="" loading="lazy" />
+                  <img
+                    src={it.small}
+                    alt=""
+                    loading="lazy"
+                    style="display:block;width:100%;height:100%;object-fit:cover;object-position:center;max-width:none;border:0;outline:0;"
+                  />
                 </button>
               ))}
             </div>
@@ -186,199 +436,6 @@ const splitLines = (s: string) => String(s || "").split(/\r?\n/);
             </figcaption>
           </figure>
         </div>
-
-        <script is:inline define:vars={{ items, PORTRAIT_H }}>
-          (() => {
-            const root = document.querySelector("[data-gallery]");
-            if (!root) return;
-
-            const heroFrame = root.querySelector("[data-hero-frame]");
-            const heroImg = root.querySelector("[data-hero-img]");
-            const caption = root.querySelector("[data-caption]");
-            const thumbs = Array.from(root.querySelectorAll("[data-thumb]"));
-
-            // ✅ Scroll-Container für Thumbnails (für Wrap-Around Sprünge)
-            const stripScroll = root.querySelector(".strip-scroll");
-
-            const openFullBtn = root.querySelector("[data-open-full]");
-
-            const filterInput = root.querySelector("#houseFilter");
-            const hitCountEl = root.querySelector("[data-hit-count]");
-
-            let index = 0;
-            let filtered = items.map((_, i) => i);
-
-            const normalize = (s) => String(s ?? "").trim();
-
-            const clampInFiltered = (pos) => {
-              const n = filtered.length;
-              if (n <= 0) return 0;
-              return (pos + n) % n;
-            };
-
-            // Variable Thumb Widths (aspect-ratio based)
-            const THUMB_H = 74;
-            const THUMB_MIN_W = 52;
-            const THUMB_MAX_W = 140;
-            const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-
-            const sizeThumbsByAspect = () => {
-              thumbs.forEach((btn) => {
-                const imgEl = btn.querySelector("img");
-                if (!imgEl) return;
-                const src = imgEl.getAttribute("src");
-                if (!src) return;
-
-                const probe = new Image();
-                probe.onload = () => {
-                  const w = probe.naturalWidth || 1;
-                  const h = probe.naturalHeight || 1;
-                  const ratio = w / h;
-                  const targetW = clamp(
-                    Math.round(THUMB_H * ratio),
-                    THUMB_MIN_W,
-                    THUMB_MAX_W
-                  );
-                  btn.style.width = `${targetW}px`;
-                  btn.style.height = `${THUMB_H}px`;
-                };
-                probe.src = src;
-              });
-            };
-
-            // ✅ Modell A: Wrap-Around -> Thumbnail-Leiste springt an den Rand
-            const setActiveThumb = (i, wrapped = false) => {
-              thumbs.forEach((t, k) => t.classList.toggle("is-active", k === i));
-
-              if (wrapped && stripScroll instanceof HTMLElement) {
-                // harter Sprung (kein "endlos weiter nach rechts/links")
-                stripScroll.scrollLeft =
-                  i === 0 ? 0 : stripScroll.scrollWidth;
-                return;
-              }
-
-              thumbs[i]?.scrollIntoView({
-                behavior: "smooth",
-                inline: "center",
-                block: "nearest",
-              });
-            };
-
-            const renderCaption = (text) => {
-              caption.innerHTML = "";
-              if (!text) return;
-              String(text)
-                .split(/\r?\n/)
-                .forEach((line, i) => {
-                  if (i > 0)
-                    caption.appendChild(document.createElement("br"));
-                  caption.appendChild(document.createTextNode(line));
-                });
-            };
-
-            const applyOrientationFor = (src) => {
-              const probe = new Image();
-              probe.onload = () => {
-                const portrait = probe.naturalHeight > probe.naturalWidth;
-                heroFrame.classList.toggle("is-portrait", portrait);
-                heroFrame.classList.toggle("is-landscape", !portrait);
-              };
-              probe.src = src;
-            };
-
-            const openFullInNewTab = () => {
-              const it = items[index];
-              if (!it?.full) return;
-              window.open(it.full, "_blank", "noopener");
-            };
-
-            const render = (i, wrapped = false) => {
-              const it = items[i];
-              if (!it) return;
-              index = i;
-
-              applyOrientationFor(it.small);
-
-              heroImg.src = it.small;
-              heroImg.alt = it.title;
-
-              renderCaption(it.desc);
-
-              setActiveThumb(i, wrapped);
-            };
-
-            thumbs.forEach((btn) =>
-              btn.addEventListener("click", () => {
-                const i = Number(btn.dataset.index);
-                if (!filtered.includes(i)) return;
-                render(i);
-              })
-            );
-
-            openFullBtn?.addEventListener("click", openFullInNewTab);
-
-            // Filter Logic:
-            // ""  => alle
-            // "-" => nur Bilder ohne Hausnummern
-            // sonst => exakter Match
-            const applyFilter = () => {
-              const qRaw = normalize(filterInput?.value);
-              const wantNoHouse = qRaw === "-";
-
-              filtered = [];
-
-              items.forEach((it, i) => {
-                const houses = Array.isArray(it.houses) ? it.houses : [];
-                const ok =
-                  qRaw === ""
-                    ? true
-                    : wantNoHouse
-                    ? houses.length === 0
-                    : houses.includes(qRaw);
-
-                thumbs[i].style.display = ok ? "" : "none";
-                if (ok) filtered.push(i);
-              });
-
-              if (hitCountEl) hitCountEl.textContent = String(filtered.length);
-
-              if (filtered.length > 0) {
-                if (!filtered.includes(index)) render(filtered[0], true);
-              } else {
-                thumbs.forEach((t) => t.classList.remove("is-active"));
-              }
-            };
-
-            filterInput?.addEventListener("input", applyFilter);
-
-            const onKeyDown = (e) => {
-              if (e.metaKey || e.ctrlKey || e.altKey) return;
-              if (filtered.length === 0) return;
-
-              const pos = filtered.indexOf(index);
-              const curPos = pos >= 0 ? pos : 0;
-
-              if (e.key === "ArrowLeft") {
-                const wrapped = curPos === 0;
-                const nextPos = clampInFiltered(curPos - 1);
-                render(filtered[nextPos], wrapped);
-              } else if (e.key === "ArrowRight") {
-                const wrapped = curPos === filtered.length - 1;
-                const nextPos = clampInFiltered(curPos + 1);
-                render(filtered[nextPos], wrapped);
-              }
-            };
-
-            window.addEventListener("keydown", onKeyDown, { passive: false });
-            window.addEventListener("astro:before-swap", () =>
-              window.removeEventListener("keydown", onKeyDown)
-            );
-
-            render(0);
-            sizeThumbsByAspect();
-            applyFilter();
-          })();
-        </script>
       </section>
     )}
   </article>
@@ -433,7 +490,7 @@ const splitLines = (s: string) => String(s || "").split(/\r?\n/);
   }
 
   .filterinput {
-    width: 170px; /* etwas kürzer, damit Hint Platz hat */
+    width: 170px;
     max-width: 45vw;
     padding: 8px 10px;
     border: 1px solid rgba(0, 0, 0, 0.18);
@@ -451,10 +508,9 @@ const splitLines = (s: string) => String(s || "").split(/\r?\n/);
     border-color: rgba(0, 0, 0, 0.25);
   }
 
-  /* ✅ exakt wie Treffer */
   .filtersyntax {
-    opacity: 0.75; /* wie .filtercount */
-    font-size: 0.95rem; /* wie .filtercount */
+    opacity: 0.75;
+    font-size: 0.95rem;
     white-space: nowrap;
   }
 
@@ -478,38 +534,33 @@ const splitLines = (s: string) => String(s || "").split(/\r?\n/);
     margin: 0 0 0.75rem;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-x: contain;
+    scroll-behavior: auto;
   }
 
   .strip {
+    position: relative;
     display: flex;
     flex-wrap: nowrap;
     gap: 10px;
     width: max-content;
+    align-items: center;
+    padding: 2px;
   }
 
-  .thumb {
-    all: unset;
-    cursor: pointer;
-    display: block;
-    width: auto;
-    height: 74px;
-    flex: 0 0 auto;
-    border-radius: 10px;
-    overflow: hidden;
-    border: none;
-    background: rgba(0, 0, 0, 0.03);
-  }
+  .thumb-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    box-sizing: border-box;
+    border-radius: 12px;
 
-  .thumb img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    max-width: none;
-  }
+    border: 2px solid rgba(200, 0, 0, 0.9);
+    z-index: 5; /* ✅ ABOVE thumbs */
 
-  .thumb.is-active {
-    border: none;
+    transform: translate(0px, 0px);
+    transition: transform 120ms ease, width 120ms ease, height 120ms ease, opacity 120ms ease;
   }
 
   .thumb:focus,
@@ -560,11 +611,7 @@ const splitLines = (s: string) => String(s || "").split(/\r?\n/);
     font-size: 0.95rem;
     opacity: 0.85;
     line-height: 1.4;
-
-    /* du hattest das zuletzt extrem groß gesetzt – lasse ich unverändert,
-       falls du bewusst "immer alles" sehen willst: */
     height: 50em;
-
     overflow-y: auto;
     padding-right: 0.25rem;
   }

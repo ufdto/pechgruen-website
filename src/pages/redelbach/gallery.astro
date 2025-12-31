@@ -85,15 +85,12 @@ const metaById = {
     desc: 'die Straße von Chodau führte entlang des "Kåstenteichs" in Richtung Dorf , im Hintergrund der Spitzberg',
   },
   p14: { title: "Pechgrün", desc: "Mußl-Haus." },
-  p15: {
-    title: "Pechgrün",
-    desc: '',
-  },
-  p16: { title: "Pechgrün", desc: '' },
-  p17: { title: "Pechgrün", desc: '' },
-  p18: { title: "Pechgrün", desc: '' },
-  p19: { title: "Pechgrün", desc: '' },
-  p20: { title: "Pechgrün", desc: '' },
+  p15: { title: "Pechgrün", desc: "" },
+  p16: { title: "Pechgrün", desc: "" },
+  p17: { title: "Pechgrün", desc: "" },
+  p18: { title: "Pechgrün", desc: "" },
+  p19: { title: "Pechgrün", desc: "" },
+  p20: { title: "Pechgrün", desc: "" },
 };
 
 const items = order
@@ -122,7 +119,9 @@ const items = order
         Besitz befinden und mit Einwilligung abfotografiert wurden. Weitere Abbildungen basieren auf Reproduktionen aus
         den drei Erinnerungsbänden <em>Pechgrün – ein verschüttetes Dorf. Geschichte und Erinnerungen</em>.
       </p>
-      <p class="hint">Tipp: Klicke auf das große Bild für die Originalansicht.</p>
+      <p class="hint">
+        Tipp: Pfeiltasten ← / → zum Blättern (mit Wrap-Around), und Klick auf das große Bild für die Originalansicht.
+      </p>
     </section>
 
     {items.length === 0 ? (
@@ -145,13 +144,13 @@ const items = order
             </figcaption>
           </figure>
 
-          <div class="controls">
-            <button type="button" class="nav" data-prev aria-label="Vorheriges Bild">←</button>
-            <button type="button" class="nav" data-next aria-label="Nächstes Bild">→</button>
-          </div>
+          {/* ✅ Controls entfernt (Prev/Next Buttons weg) */}
         </div>
 
         <div class="strip" data-strip aria-label="Bildauswahl">
+          {/* ✅ Indicator (separates Overlay, robust gegen CSS-Resets) */}
+          <div class="thumb-indicator" data-thumb-indicator aria-hidden="true"></div>
+
           {items.map((it, idx) => (
             <button
               class={"thumb" + (idx === 0 ? " is-active" : "")}
@@ -159,6 +158,7 @@ const items = order
               data-thumb
               data-index={idx}
               aria-label={`Bild wählen: ${it.title}`}
+              style="position:relative;z-index:1;"
             >
               <img src={it.small} alt="" loading="lazy" />
             </button>
@@ -195,9 +195,9 @@ const items = order
 
             const heroImg = root.querySelector("[data-hero-img]");
             const caption = root.querySelector("[data-caption]");
-            const prev = root.querySelector("[data-prev]");
-            const next = root.querySelector("[data-next]");
             const thumbs = Array.from(root.querySelectorAll("[data-thumb]"));
+            const strip = root.querySelector("[data-strip]");
+            const indicator = root.querySelector("[data-thumb-indicator]");
 
             const dlg = root.querySelector("[data-dialog]");
             const openBtn = root.querySelector("[data-open]");
@@ -208,14 +208,15 @@ const items = order
             const dlgDl = root.querySelector("[data-dlg-download]");
             const dlgOpen = root.querySelector("[data-dlg-open]");
 
+            if (
+              !(heroImg instanceof HTMLImageElement) ||
+              !(caption instanceof HTMLElement) ||
+              !(strip instanceof HTMLElement) ||
+              !(indicator instanceof HTMLElement) ||
+              thumbs.length === 0
+            ) return;
+
             let index = 0;
-
-            const clamp = (i) => (i + items.length) % items.length;
-
-            const setActiveThumb = (i) => {
-              thumbs.forEach((t, k) => t.classList.toggle("is-active", k === i));
-              thumbs[i]?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-            };
 
             const renderCaption = (it) => {
               caption.innerHTML = "";
@@ -232,7 +233,47 @@ const items = order
               }
             };
 
-            const render = (i) => {
+            // ✅ Center logic like the working gallery (no smooth coalescing)
+            const centerThumb = (btn) => {
+              const s = strip.getBoundingClientRect();
+              const b = btn.getBoundingClientRect();
+              const btnCenter = b.left - s.left + b.width / 2;
+              const target = strip.scrollLeft + btnCenter - strip.clientWidth / 2;
+              strip.scrollTo({ left: target, behavior: "auto" });
+            };
+
+            const moveIndicatorTo = (i) => {
+              const btn = thumbs[i];
+              if (!(btn instanceof HTMLElement)) return;
+              indicator.style.opacity = "1";
+              indicator.style.transform = `translate(${btn.offsetLeft}px, ${btn.offsetTop}px)`;
+              indicator.style.width = `${btn.offsetWidth}px`;
+              indicator.style.height = `${btn.offsetHeight}px`;
+            };
+
+            const setActiveThumb = (i, wrapped = false) => {
+              thumbs.forEach((t, k) => t.classList.toggle("is-active", k === i));
+              moveIndicatorTo(i);
+
+              // pin edges and handle wrap jumps
+              if (wrapped) {
+                strip.scrollLeft = i === 0 ? 0 : strip.scrollWidth;
+                return;
+              }
+              if (i === 0) {
+                strip.scrollLeft = 0;
+                return;
+              }
+              if (i === items.length - 1) {
+                strip.scrollLeft = strip.scrollWidth;
+                return;
+              }
+
+              const btn = thumbs[i];
+              if (btn instanceof HTMLElement) centerThumb(btn);
+            };
+
+            const render = (i, wrapped = false) => {
               const it = items[i];
               if (!it) return;
               index = i;
@@ -241,39 +282,46 @@ const items = order
               heroImg.alt = it.title;
               renderCaption(it);
 
-              dlgImg.src = it.full;
-              dlgImg.alt = it.title;
-              dlgTitle.textContent = it.title;
+              if (dlgImg instanceof HTMLImageElement) {
+                dlgImg.src = it.full;
+                dlgImg.alt = it.title;
+              }
+              if (dlgTitle instanceof HTMLElement) dlgTitle.textContent = it.title;
 
-              if (dlgMeta) {
+              if (dlgMeta instanceof HTMLElement) {
                 dlgMeta.textContent = it.desc || "";
                 dlgMeta.style.display = it.desc ? "" : "none";
               }
 
-              dlgDl.href = it.full;
-              dlgDl.setAttribute("download", `${it.id}.jpg`);
-              dlgOpen.href = it.full;
+              if (dlgDl instanceof HTMLAnchorElement) {
+                dlgDl.href = it.full;
+                dlgDl.setAttribute("download", `${it.id}.jpg`);
+              }
+              if (dlgOpen instanceof HTMLAnchorElement) dlgOpen.href = it.full;
 
-              setActiveThumb(i);
+              setActiveThumb(i, wrapped);
             };
 
-            const goPrev = () => render(clamp(index - 1));
-            const goNext = () => render(clamp(index + 1));
+            const goPrev = () => {
+              const wrapped = index === 0;
+              const nextIndex = wrapped ? items.length - 1 : index - 1;
+              render(nextIndex, wrapped);
+            };
 
-            prev.addEventListener("click", goPrev);
-            next.addEventListener("click", goNext);
+            const goNext = () => {
+              const wrapped = index === items.length - 1;
+              const nextIndex = wrapped ? 0 : index + 1;
+              render(nextIndex, wrapped);
+            };
 
             thumbs.forEach((btn) =>
-              btn.addEventListener("click", () => render(Number(btn.dataset.index)))
+              btn.addEventListener("click", () => render(Number(btn.dataset.index), false))
             );
 
-            openBtn.addEventListener("click", () => dlg.showModal());
-            closeBtn.addEventListener("click", () => dlg.close());
-            dlg.addEventListener("click", (e) => e.target === dlg && dlg.close());
+            if (openBtn) openBtn.addEventListener("click", () => dlg?.showModal());
+            if (closeBtn) closeBtn.addEventListener("click", () => dlg?.close());
+            dlg?.addEventListener("click", (e) => e.target === dlg && dlg.close());
 
-            // Keyboard navigation:
-            // - ArrowLeft / ArrowRight: prev/next (works with or without dialog open)
-            // - Escape: close dialog (if open)
             const isTypingContext = (el) => {
               if (!el) return false;
               const tag = (el.tagName || "").toLowerCase();
@@ -282,7 +330,7 @@ const items = order
 
             const onKeyDown = (e) => {
               if (e.defaultPrevented) return;
-              if (e.metaKey || e.ctrlKey || e.altKey) return; // don't hijack shortcuts
+              if (e.metaKey || e.ctrlKey || e.altKey) return;
               if (isTypingContext(document.activeElement)) return;
 
               if (e.key === "ArrowLeft") {
@@ -300,13 +348,11 @@ const items = order
             };
 
             window.addEventListener("keydown", onKeyDown, { passive: false });
-
-            // cleanup when navigating with Astro view transitions (if used)
             window.addEventListener("astro:before-swap", () => {
               window.removeEventListener("keydown", onKeyDown);
             });
 
-            render(0);
+            render(0, true);
           })();
         </script>
       </section>
@@ -391,25 +437,13 @@ const items = order
     line-height: 1.4;
   }
 
-  .controls {
-    display: flex;
-    gap: 0.6rem;
-  }
-
-  .nav {
-    all: unset;
-    cursor: pointer;
-    border: 1px solid rgba(0, 0, 0, 0.18);
-    padding: 0.45rem 0.65rem;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.9);
-  }
-
   /* ===========================================================
-     STRIP-FIX (robust gegen globales CSS)
+     STRIP (stable + indicator overlay)
      =========================================================== */
   .strip {
     margin-top: 0.9rem;
+
+    position: relative;
 
     display: flex;
     flex-wrap: nowrap;
@@ -422,6 +456,25 @@ const items = order
 
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-x: contain;
+
+    scroll-behavior: auto;
+  }
+
+  /* selection indicator (overlays, doesn't depend on button outline/box-shadow) */
+  .thumb-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    box-sizing: border-box;
+    border-radius: 12px;
+
+    border: 2px solid rgba(0, 0, 0, 0.90);
+    z-index: 5;
+
+    transform: translate(0px, 0px);
+    transition: transform 120ms ease, width 120ms ease, height 120ms ease, opacity 120ms ease;
   }
 
   .strip > .thumb {
@@ -430,7 +483,10 @@ const items = order
 
     border-radius: 10px;
     overflow: hidden;
+
+    /* keep thumbs "quiet": indicator shows selection */
     border: 2px solid transparent;
+
     background: rgba(0, 0, 0, 0.03);
 
     width: 110px;
@@ -454,8 +510,9 @@ const items = order
     max-width: none !important;
   }
 
+  /* keep old class (harmless) */
   .thumb.is-active {
-    border-color: rgba(0, 0, 0, 0.35);
+    border-color: transparent;
   }
 
   .dlg {
