@@ -2,7 +2,8 @@
 title: "Das Halden-Abenteuer"
 subtitle: "Zwei Männer, sechs Tafeln, ein Felsen – und ein Name aus dem Jahr 1939"
 date: 2025-12-17
-order: 3
+updated: 2026-01-02
+order: 5
 ---
 
 Es begann, wie viele gute Geschichten beginnen: mit einer Frage.
@@ -29,6 +30,17 @@ Ein halbes Jahr lang bereiteten wir diese Reise vor. Nicht nur gedanklich.
 
 Claus übernahm das Handwerkliche: Pfähle zusägen, anspitzen, Material organisieren. Ich kümmerte mich um die Inhalte: Texte, Bilder, Layouts für die Gedenktafeln. Claus ließ alles im Copyshop ausdrucken, befestigte die Tafeln und machte sie so wetterfest, wie es eben ging – was sich später als optimistisch herausstellen sollte.
 
+<figure style="margin:1.2rem auto 1.2rem 0; max-width:760px;">
+  <img
+    src="/images/claus-werkstatt.jpg"
+    alt="Claus in seiner Werkstatt bei den Vorbereitungen für die Gedenktafeln"
+    style="display:block; width:100%; height:auto;"
+  >
+  <figcaption style="margin:.4rem 0 0; font-size:.95rem; line-height:1.35;">
+    In der Werkstatt: Vorbereitung der Pfähle und Gedenktafeln vor der Reise nach Pechgrün.
+  </figcaption>
+</figure>
+
 Die Idee war ehrgeizig:  
 Vier Gedenktafeln **auf der Halde** für das verschwundene Pechgrün, eine am **Affenfelsen**, eine bei der **Wehrmühle**, die schon im Dreißigjährigen Krieg existierte und später dem Haldenbetrieb geopfert wurde.
 
@@ -36,18 +48,18 @@ Was uns zusätzlich motivierte, hatte mit einem **anderen Felsen** zu tun.
 
 ---
 
-## Heinrich Sier und ein Name im Stein
+## Heinrich Siehr und ein Name im Stein
 
-Auf einer früheren Suche hatte Claus bereits einen anderen Felsen gefunden: den **Heinrich-Sier-Felsen**. In einem der Pechgrüner Erinnerungsbände – jenen Büchern, an denen auch mein Onkel Erich mitgearbeitet hat – wird dieser Felsen erwähnt. Und der Name darauf.
+Auf einer früheren Suche hatte Claus bereits einen anderen Felsen gefunden: den **Heinrich-Siehr-Felsen**. In einem der Pechgrüner Erinnerungsbände – jenen Büchern, an denen auch mein Onkel Erich mitgearbeitet hat – wird dieser Felsen erwähnt. Und der Name darauf.
 
-**Heinrich Sier**, ein Jugendfreund meines Onkels Erich, hatte **1939** seinen Namen in diesen Felsen geritzt. Kurz bevor er eingezogen wurde. Heinrich Sier kam aus dem Krieg nicht zurück.
+**Heinrich Siehr**, ein Jugendfreund meines Onkels Erich, hatte **1939** seinen Namen in diesen Felsen geritzt. Kurz bevor er eingezogen wurde. Heinrich Siehr kam aus dem Krieg nicht zurück.
 
 Aber sein Name blieb.
 
 Dieser Felsen, diese Inschrift, dieses Wissen darum, dass jemand kurz vor einem Einschnitt seines Lebens einen Namen in den Stein setzte – das war mehr als eine Randnotiz. Es wurde zu einem stillen Vorbild.
 
 Und genau daraus entstand unsere Idee:  
-Wenn wir den Affenfelsen finden, dann würden auch wir dort etwas hinterlassen. Keine großen Worte. Keine Parolen. **Nur Initialen.** In derselben stillen Geste, mit der Heinrich Sier einst seinen Namen hinterlassen hatte.
+Wenn wir den Affenfelsen finden, dann würden auch wir dort etwas hinterlassen. Keine großen Worte. Keine Parolen. **Nur Initialen.** In derselben stillen Geste, mit der Heinrich Siehr einst seinen Namen hinterlassen hatte.
 
 ---
 
@@ -57,6 +69,17 @@ Wir reisten an, übernachteten im Hotel – und zogen am nächsten Morgen los.
 Das Auto war voll. Wirklich voll. Pfähle, Tafeln, Werkzeug, Rucksäcke, Wasser, Proviant. Das meiste davon kam auf unsere Rücken.
 
 Vor uns lagen etwa **zweieinhalb Kilometer Aufstieg**, 100 bis 150 Höhenmeter – und das mit sperrigem Gepäck. Claus trug die langen Pfähle. Ich trug Rucksack, Werkzeuge, Kamera. Claus ist **79**, ich **69**. Nur dass Claus biologisch eher bei 60 unterwegs ist.
+
+<figure style="margin:1.2rem auto 1.2rem 0; max-width:760px;">
+  <img
+    src="/images/halde-aufstieg.jpg"
+    alt="Aufstieg zur Halde mit Werkzeug und Ausrüstung"
+    style="display:block; width:100%; height:auto;"
+  >
+  <figcaption style="margin:.4rem 0 0; font-size:.95rem; line-height:1.35;">
+    Aufstieg zur Halde: Pfähle, Werkzeug und Gepäck – der Weg nach oben war Teil des Abenteuers.
+  </figcaption>
+</figure>
 
 Oben auf der Halde begann die eigentliche Arbeit. Löcher graben. Tiefe Löcher. Für Pfähle von bis zu zwei Metern. Der Untergrund: steinig, voller Brocken. Werkzeug: keine Spitzhacke, nur ein kleines Zimmermannshämmerchen mit Spitze.
 
@@ -88,7 +111,42 @@ Es war **der Affenfelsen**.
 
 Am nächsten Tag kamen wir zurück – diesmal mit dem richtigen Werkzeug.
 
-Claus arbeitete mit Flex und Meißel. Ich fotografierte und filmte. Es staubte. Es war laut. Und während die Funken flogen, war **Heinrich Sier** unausgesprochen mit dabei.
+Claus arbeitete mit Flex und Meißel. Ich fotografierte und filmte. Es staubte. Es war laut. Und während die Funken flogen, war **Heinrich Siehr** unausgesprochen mit dabei.
+
+<div style="display:flex; gap:1.2rem; flex-wrap:wrap; margin:1.6rem 0;">
+
+  <figure style="flex:1 1 320px; max-width:360px; margin:0;">
+    <div style="position:relative; padding-top:177.78%; width:100%;">
+      <iframe
+        src="https://player.vimeo.com/video/1151012472"
+        style="position:absolute; top:0; left:0; width:100%; height:100%;"
+        frameborder="0"
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+    </div>
+    <figcaption style="margin:.45rem 0 0; font-size:.92rem; line-height:1.35; opacity:.85;">
+      Claus beim Einmeißeln der Initialen in den Affenfelsen (Mai 2025).
+    </figcaption>
+  </figure>
+
+  <figure style="flex:1 1 320px; max-width:360px; margin:0;">
+    <div style="position:relative; padding-top:177.78%; width:100%;">
+      <iframe
+        src="https://player.vimeo.com/video/1151015418"
+        style="position:absolute; top:0; left:0; width:100%; height:100%;"
+        frameborder="0"
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+    </div>
+    <figcaption style="margin:.45rem 0 0; font-size:.92rem; line-height:1.35; opacity:.85;">
+      Beim Arbeiten am Affenfelsen – Staub und Funken (Mai 2025).
+    </figcaption>
+  </figure>
+
+</div>
+
 
 Unsere Initialen im Stein waren kein Zufall. Sie waren eine bewusste Geste. Eine Fortsetzung. Ein stiller Gruß über Generationen hinweg.
 
