@@ -1,0 +1,216 @@
+---
+const {
+  topoToday = "/images/affenfelsen-topo-heute.jpg",
+  aerial1950 = "/images/affenfelsen-luftbild-1950.jpg",
+  topo1964 = "/images/affenfelsen-topo-1964.webp",
+  aspectW = 1792,
+  aspectH = 1120,
+} = Astro.props;
+---
+
+<section class="af-section" aria-label="Kartenüberlagerung Affenfelsen">
+  <h2 class="af-title">Karten-Overlay</h2>
+
+  <div class="af-stack" style={`aspect-ratio:${aspectW} / ${aspectH}; width:100%;`}>
+    <img
+      id="af-base-topo"
+      class="af-hidden"
+      src={topoToday}
+      alt="Basiskarte: Topografische Karte heute"
+    />
+
+    <img
+      id="af-base-air"
+      src={aerial1950}
+      alt="Basiskarte: Luftbild 1950"
+    />
+
+    <img
+      id="af-overlay"
+      class="af-overlay"
+      src={topo1964}
+      alt="Overlay: Topografische Karte 1964"
+      style="opacity:0"
+    />
+  </div>
+
+  <div class="af-controls">
+    <!-- Text-Toggle -->
+    <div class="af-toggle" role="group" aria-label="Basiskarte umschalten">
+      <span id="af-btn-air" role="button" tabindex="0" aria-pressed="true">
+        Luftbild 1950
+      </span>
+      <span class="af-sep" aria-hidden="true">|</span>
+      <span id="af-btn-topo" role="button" tabindex="0" aria-pressed="false">
+        Topo heute
+      </span>
+    </div>
+
+    <label for="af-opacity">Topo 1964</label>
+    <input id="af-opacity" type="range" min="0" max="100" value="0" />
+    <div class="af-val" id="af-val">0%</div>
+  </div>
+</section>
+
+<style>
+  .af-section { margin: 1.6rem 0; }
+  .af-title { margin: 0 0 .6rem; font-size: 1.25rem; }
+
+  .af-stack{
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: transparent;
+  }
+
+  .af-stack img{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .af-hidden{ display: none; }
+  .af-overlay{ transition: opacity 80ms linear; }
+
+  .af-controls{
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  /* Text-Toggle – ohne Unterstreichung */
+  .af-toggle{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+  }
+
+  .af-toggle span[role="button"]{
+    cursor: pointer;
+    color: rgba(0,0,0,.65);
+    user-select: none;
+  }
+
+  .af-toggle span[aria-pressed="true"]{
+    color: rgba(0,0,0,.95);
+    font-weight: 600;
+  }
+
+  .af-sep{
+    color: rgba(0,0,0,.35);
+    user-select: none;
+  }
+
+  /* Label */
+  .af-controls label{
+    font-size: 14px;
+    color: rgba(0,0,0,.72);
+  }
+
+  /* Slider */
+  .af-controls input[type="range"]{
+    flex: 1;
+    min-width: 220px;
+    max-width: 260px; /* <- NUR DAS */
+    height: 22px;
+    background: transparent;
+    appearance: none;
+  }
+
+  /* Track */
+  .af-controls input[type="range"]::-webkit-slider-runnable-track{
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(0,0,0,.18);
+  }
+  .af-controls input[type="range"]::-moz-range-track{
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(0,0,0,.18);
+  }
+
+  /* Thumb → senkrechter Strich */
+  .af-controls input[type="range"]::-webkit-slider-thumb{
+    appearance: none;
+    width: 4px;
+    height: 18px;
+    margin-top: -7px;
+    background: rgba(0,0,0,.7);
+    border-radius: 1px;
+  }
+  .af-controls input[type="range"]::-moz-range-thumb{
+    width: 4px;
+    height: 18px;
+    background: rgba(0,0,0,.7);
+    border-radius: 1px;
+  }
+
+  .af-val{
+    width: 48px;
+    text-align: right;
+    font-size: 14px;
+    color: rgba(0,0,0,.65);
+  }
+</style>
+
+<script>
+  (() => {
+    const baseTopo = document.getElementById("af-base-topo");
+    const baseAir  = document.getElementById("af-base-air");
+    const overlay  = document.getElementById("af-overlay");
+
+    const btnTopo  = document.getElementById("af-btn-topo");
+    const btnAir   = document.getElementById("af-btn-air");
+
+    const slider   = document.getElementById("af-opacity");
+    const val      = document.getElementById("af-val");
+
+    if (!baseTopo || !baseAir || !overlay || !btnTopo || !btnAir || !slider) return;
+
+    function setBase(which) {
+      const air = which === "air";
+      baseAir.classList.toggle("af-hidden", !air);
+      baseTopo.classList.toggle("af-hidden", air);
+
+      btnAir.setAttribute("aria-pressed", air ? "true" : "false");
+      btnTopo.setAttribute("aria-pressed", air ? "false" : "true");
+    }
+
+    function setOverlayOpacity(pct) {
+      overlay.style.opacity = String(pct / 100);
+      if (val) val.textContent = `${pct}%`;
+    }
+
+    function activate(which) {
+      setBase(which);
+    }
+
+    function onKey(e, which) {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        activate(which);
+      }
+    }
+
+    btnAir.addEventListener("click", () => activate("air"));
+    btnTopo.addEventListener("click", () => activate("topo"));
+
+    btnAir.addEventListener("keydown", (e) => onKey(e, "air"));
+    btnTopo.addEventListener("keydown", (e) => onKey(e, "topo"));
+
+    slider.addEventListener("input", () =>
+      setOverlayOpacity(Number(slider.value))
+    );
+
+    slider.value = "0";
+    setBase("air");
+    setOverlayOpacity(0);
+  })();
+</script>
