@@ -227,10 +227,10 @@ const items = [
                   <td class="bereich">{e.bereich}</td>
 
                   <td class="date-cell">
-                    <span class="date-text">{fmtDate(e.date)}</span>
                     {e.isUpdated ? (
                       <span class="badge" title="Updated">↻</span>
                     ) : null}
+                    <span class="date-text">{fmtDate(e.date)}</span>
                   </td>
                 </tr>
               );
