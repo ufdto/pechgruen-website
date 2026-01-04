@@ -9,22 +9,37 @@ x: 4021
 y: 6932
 ---
 <style>
-hr.spieltrenner {
-  margin: 2rem 0;
-  border: none;
-  border-top: 1px solid #aaa;
-}
-.sprachnachtrag {
-  margin-top: 3rem;
-  font-size: 0.9rem;
-  color: #555;
-}
-.sprachnachtrag h3 {
-  font-size: 0.95rem;
-  margin-bottom: 0.75rem;
-}
+  hr.spieltrenner {
+    margin: 2rem 0;
+    border: none;
+    border-top: 1px solid #aaa;
+  }
+  .sprachnachtrag {
+    margin-top: 3rem;
+    font-size: 0.9rem;
+    color: #555;
+  }
+  .sprachnachtrag h3 {
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+  }
+  .source {
+    margin-top: 3.5rem;   /* vorher 2.5rem */
+    font-size: 0.9rem;
+    color: rgba(0, 0, 0, 0.55);
+  }
+  .source hr {
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.15);
+    margin-bottom: 0.75rem;
+    margin-top: 0;        /* sicherstellen, dass der Abstand nur von oben kommt */
+  }
+  .source p {
+    margin: 0;
+    line-height: 1.4;
+  }
+
 </style>
-*Text von Erich Heinzl, erschienen 1998 in: „Pechgrün – Geschichte und Erinnerungen, Band 3"*
 
 Das Zentrum von Pechgrün war für die Jugend des Dorfes „d’ Bruck“. Sie führte zwischen Bossn Knopps Bud und Wewers Wässaluach bei Wickns Huulzbianbaam über den Bach. Dort war die „Burg“, ein Lichtmast mit einer Straßenlampe, welche die Umgebung der Bruck nach Einbruch der Dunkelheit heimelig beleuchtete.
 
@@ -127,3 +142,11 @@ Ableitung von *schoppen*, *stoßen* oder *anschieben*.
 Einfaches Stoß- oder Rutschspiel, an dem auch Mädchen teilnehmen konnten.
 
 </div>
+
+<footer class="source">
+  <hr />
+  <p>
+    <strong>Autor:</strong> Erich Heinzl ·
+    <strong>Quelle:</strong> Pechgrün – Geschichte und Erinnerungen, Band 3, 1998
+  </p>
+</footer>

@@ -8,7 +8,26 @@ label: "B"
 x: 3983
 y: 6902
 ---
-*Text von Erich Heinzl, erschienen in: „Pechgrün – Geschichte und Erinnerungen, Band 3" erschienen 1998*
+
+<style>
+  .source {
+    margin-top: 3.5rem;   /* vorher 2.5rem */
+    font-size: 0.9rem;
+    color: rgba(0, 0, 0, 0.55);
+  }
+
+  .source hr {
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.15);
+    margin-bottom: 0.75rem;
+    margin-top: 0;        /* sicherstellen, dass der Abstand nur von oben kommt */
+  }
+
+  .source p {
+    margin: 0;
+    line-height: 1.4;
+  }
+</style>
 
 Sie war kein besonderes Bauwerk, eben nur eine Bretterbude, allerdings an einem markanten Platz und das wiederum war das Besondere. D’ Bud war mitten im Dorf über dem Bach erbaut und dafür gab es Gründe.
 
@@ -29,3 +48,11 @@ Welche Freude machte eine Zuckerlsschachtel. Es waren Spanschachteln aus Holz, g
 In seinem Angebot hatte der Budkärl, er hieß Kreuzer und wohnte im „iawan“ Dorf, auch noch Rumkugeln, Kaiserfleisch, „Kremhe(j)tla“, Brustzucker und bunte Eisschokolade, die einem im Nu zwischen den Fingern schmolz. Im Sommer verkaufte er Brausepulver, gelbes und rotes. Zum Anrühren der „Brauser“ stellte er Henkelgläser zur Verfügung. Das Wasser für die Limonade mußte man allerdings aus dem nahen „Brunnahaisla“, das zwischen Schindler Bertas „Huulzplatz“ und dem Glöcknerhof lag, glasweise holen. Auf diese Weise hatte man immer ganz frisches Quellwasser für die Zubereitung der Brauselimonade zur Verfügung.
 
 Die Bud war fast immer mit Kindern überfüllt, die ihr spärliches Taschengeld sofort nach dem Empfang in Süßigkeiten umsetzten. Um einen Platz auf der schon erwähnten Budenbank zu ergattern, gab es oft heftige Raufereien und nur die Stärksten hatten immer einen Sitzplatz. Als der Kreuzer Karl den Verkauf in der Bud nicht mehr betrieb und d’ Bud auf den Schoellberch verlagert worden war, war es vorbei mit der schönen „Bud’romantik“.
+
+<footer class="source">
+  <hr />
+  <p>
+    <strong>Autor:</strong> Erich Heinzl ·
+    <strong>Quelle:</strong> Pechgrün – Geschichte und Erinnerungen, Band 3, 1998
+  </p>
+</footer>
