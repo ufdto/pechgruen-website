@@ -51,11 +51,9 @@ Diese Seite beschreibt den Weg vom Dorf Pechgrün in Richtung Stelzengrün und N
   >
   <figcaption style="max-width:980px; margin: .4rem 0 0; font-size: .95rem; line-height: 1.35;">
     Übersicht des Wegverlaufs aus dem Dorf Pechgrün hinaus. Das Luftbild von 1946 zeigt die Weggabel nach Stelzengrün / Braunsdorf und Neuhäuser / Doglasgrün sowie die Lage des Ortsteils »Vuaglsång« im Zusammenhang mit Dorf und Umland.
-</p>
+</figure>
 
-<p>
 Der Weg nach Stelzengrün, beziehungsweise zum Ortsteil »Vuaglsång« war auf beiden Seiten eingzäunt, auch noch etwa 100 m nach dem Transformatorenhaus, welches rechts am Wegrand stand. In diesem Bau wurde der Starkstrom aus dem E-Werk auf Normalspannung umgeformt. Es war ein fensterloser, turmähnlicher Bau, flankiert von Holunderstauden sowie Brombeer- und Heckenrosensträuchern. Gegenüber war die Einfahrt in den »Euin Huaf«. Zwischen diesem Hof und der Straße war in den 30er Jahren das Siegerthaus, Nr. 103, in das Wiesengrundstück hineingebaut worden, das bis dahin dem Pleier gehörte. Dieses Haus war eines der vier, die noch vor Beginn des 2. Weltkrieges gebaut wurden. Im Haus gab es zwei 2-Zimmer Wohnungen mit Küche und Bad, was für Pechgrüner Verhältnisse das Vornehmste darstellte.
-</p>
 
 <figure style="margin: 1.2rem 0 0.8rem;">
   <img
@@ -79,9 +77,7 @@ Der Weg nach Stelzengrün, beziehungsweise zum Ortsteil »Vuaglsång« war auf b
   </figcaption>
 </figure>
 
-<p>
 Der »Euin Huaf«, Haus Nr. 21, grenzte mit seinem Wohnhaus und dem Stall unmittelbar an den Fahrweg. Die Scheune stand parallel zum Haus. Der Hofraum war an beiden Seiten offen und wurde nach Westen von einem großen Garten für das Jungvieh begrenzt. In der äußersten rechten Ecke dieses Gartens hatte sich der Bürgerschullehrer Franz Sattler, der früher als Pechgrüner Volksschullehrer im Pleierhaus wohnte, ein Gartenhäuschen errichten dürfen. Das Wohn- und Stallgebäude war fast von gleicher Bauweise wie der »Matzl- und Låin Huaf«, wahrscheinlich wurde er in der gleichen Zeit wie diese beiden erbaut. Dieser Hof stand auf einer leichten Anhöhe und alle angrenzenden Wiesen und Felder bis hin zu den Teichen gehörten zu seinem Besitz. Der »Euinbauer« war, so glaube ich, der größte Grundbesitzer im Dorf. Die Wasserversorgung des Hofes erfolgte durch eine kilometerlange Leitung. Durch Holzrohre kam das in der »Long Wies« gefaßte Wasser in den Hof, wo es ununterbrochen in einen großen Trog aus Granit floß.
-</p>
 
 <figure style="margin: 1.2rem 0 0.8rem;">
   <img
@@ -139,7 +135,7 @@ Erst zwischen dem Haus der »Gloosseffn Berta« und vom »Hahn Franz« gab es wi
 
 Ein Feldweg, der vom »Teichwewer« und »Säjteich« kam, führte an diesem »Teichl« vorbei und erreichte oberhalb des «Ullmann Hauses« den Weg nach Neuhäuser. »Brandners Teichl« war nur wenige Meter vom »Säjteich« entfernt, auf seinem Damm standen ein paar jüngere Eichen. Gleich danach begannen die sumpfigen Ufer des Seeteiches. Dieser Teich war der größte und tiefste. Das dichte Schilf, das in ihm wuchs, war ein Paradies für die Wildenten, die dort sehr zahlreich nisteten. Auch Bisamratten hatten dort ihre Burgen.
 
-Der Weg nach Neuhäuser stieg sachte an und erreichte bei den ersten Höfen von Neuhäuser 468 m Seehöhe. Ein Hügel, der dem Föllerberg vorgelagert war, erreichte schon eine Höhe von 499 m. Vor diesem Hügel, an dem das »Hamplhaus« und eine alte Eiche standen, lag der trockengelegte »Selgelteich« und das »Segelwallerl«. Von den Sumpfwiesen hinter dem »Stårkeneierteich« stieg das Gelände bis zu »Wickn Sefferls Huaf« an. Unmittelbar daneben befand sich der »Segelhuaf« und das »Blaaschanwesen«, hinter dem schon der geschlossene Wald begann.
+Der Weg nach Neuhäuser stieg sachte an und erreichte bei den ersten Höfen von Neuhäuser 468 m Seehöhe. Ein Hügel, der dem Föllerberg vorgelagert war, erreichte schon eine Höhe von 499 m. Vor diesem Hügel, an dem das »Hamplhaus« und eine alte Eiche standen, lag der trockengelegte »Segelteich« und das »Segelwallerl«. Von den Sumpfwiesen hinter dem »Stårkeneierteich« stieg das Gelände bis zu »Wickn Sefferls Huaf« an. Unmittelbar daneben befand sich der »Segelhuaf« und das »Blaaschanwesen«, hinter dem schon der geschlossene Wald begann.
 
 <footer class="source">
   <hr />
