@@ -1,0 +1,510 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+export const chronik = {
+  title: "Da Drrrn",
+  subtitle:
+    "Ein Gedicht von Erich Heinzl über das Pepperl, seinen kleinen Bruder",
+  date: "2026-01-14",
+  bereich: "Texte, Stimmen und Erinnerungen",
+  href: "/da-drrrn",
+  order: 1,
+};
+
+// ✅ Text exakt aus deinem CSV (eingebettet)
+const LINES: Array<
+  | { kind: "blank" }
+  | { kind: "line"; n: number; eg: string; de: string; isTitle?: boolean }
+> = [
+  {
+    kind: "line",
+    n: 0,
+    eg: "Da Drrrn",
+    de: 'der "Drrrn" (Spizname fuer einen kleinen Jungen)',
+    isTitle: true,
+  },
+  { kind: "blank" },
+
+  {
+    kind: "line",
+    n: 1,
+    eg: "S Bejwl woa nuu recht kloa(n,",
+    de: "Der Bub war noch sehr klein,",
+  },
+  {
+    kind: "line",
+    n: 2,
+    eg: "Koa Mänsch denkt, dasma dåu scho(n Ra(d)lfåhrn koa(n,",
+    de: "Niemand glaubt, dass man in diesem Alter schon Fahrrad fahren kann,",
+  },
+  {
+    kind: "line",
+    n: 3,
+    eg: "San Bodvadda owa håut dåu ånnascht denkt",
+    de: "Sein Taufpate sieht das anders",
+  },
+  {
+    kind: "line",
+    n: 4,
+    eg: "Uu håut nan z’Weihnåchtn a Fåhrr(a)d’l gschenkt.",
+    de: "Zu Weihnachten schenkt er ihm ein kleines Fahrrad.",
+  },
+  { kind: "blank" },
+
+  {
+    kind: "line",
+    n: 5,
+    eg: "S’ Ra(d)l woa råut uu d’ Gråiß håut påßt,",
+    de: "Das Fahrrad war rot, und die Größe hat genau gepasst,",
+  },
+  {
+    kind: "line",
+    n: 6,
+    eg: "S’ håut an Freilauf ghått, uu s’ Bremsen wåa aa koa Låst.",
+    de: "Es hatte einen Freilauf, und das Bremsen bereitete keine Schwierigkeiten.",
+  },
+  {
+    kind: "line",
+    n: 7,
+    eg: "S’ Fåhrnlerna woa füas Bejwl aa recht leicht,",
+    de: "Das Fahrradfahren zu lernen fiel dem Buben recht leicht,",
+  },
+  {
+    kind: "line",
+    n: 8,
+    eg: "A Bißl am Såttl haltn håut schon greicht.",
+    de: "Ein wenig Festhalten am Sattel genügte bereits.",
+  },
+  { kind: "blank" },
+
+  {
+    kind: "line",
+    n: 9,
+    eg: "Sua long da Voda dees håut denkt,",
+    de: "Während der Vater noch darüber nachdenkt,",
+  },
+  {
+    kind: "line",
+    n: 10,
+    eg: "S’ Bejwl scho(n aloin in da Stråuß oi lenkt.",
+    de: "fährt der Bub mit dem Fahrrad schon allein die Straße hinunter.",
+  },
+  {
+    kind: "line",
+    n: 11,
+    eg: "A Motoa füas Ra(d)l waa holt aa nu schäjn,",
+    de: "Ein Motor für das Fahrrad wäre natürlich auch noch schön gewesen.",
+  },
+  {
+    kind: "line",
+    n: 12,
+    eg: "Waals owa neat san koa, mouß Drrn, Drrrn va sölwa gåjhn.",
+    de: "Weil es aber keinen gibt, muss das „Drrrn, Drrrn“ von ihm selbst kommen.",
+  },
+  { kind: "blank" },
+
+  {
+    kind: "line",
+    n: 13,
+    eg: "S’ Peppal startet s’ Ra(d)l wej an Motoa,",
+    de: "Der kleine Pepp (Josef) startet das Fahrrad so, als wäre es ein Motorrad,",
+  },
+  {
+    kind: "line",
+    n: 14,
+    eg: "Waal ma ba dean Ra(d)la zruckwårts tre(t)n koa.",
+    de: "Denn bei diesem Fahrrad kann man rückwärts in die Pedale treten.",
+  },
+  {
+    kind: "line",
+    n: 15,
+    eg: "Drrrn, drrrn schnurrt ea ban Drehgasge(b)m,",
+    de: "Dabei macht er selbst das Motorgeräusch und dreht mit der Hand am imaginären Gasgriff,",
+  },
+  {
+    kind: "line",
+    n: 16,
+    eg: "Denn suaran Start håust mejn mietdale(b)m.",
+    de: "So einen Start hast du selbst miterleben müssen.",
+  },
+  { kind: "blank" },
+
+  {
+    kind: "line",
+    n: 17,
+    eg: "Båal drrrnt ea durchs Dorf uu ims Haus,",
+    de: "Bald fährt er mit seinem „Drrrn-drrrn“ durchs Dorf und rund ums Haus,",
+  },
+  {
+    kind: "line",
+    n: 18,
+    eg: "Füa d’ Nåchbern woa dees a rechta Graus.,",
+    de: "Für die Nachbarn ist das wirklich nervig, ein rechter Graus.",
+  },
+  {
+    kind: "line",
+    n: 19,
+    eg: "Unna olwara Harras håut dåzou nu baalt,",
+    de: "Und der alberne, verrückte Schäferhund Harras bellt dazu auch noch laut mit.",
+  },
+  {
+    kind: "line",
+    n: 20,
+    eg: "håut afs Bejwl gwårt, is voa da Loontüa ghaalt.",
+    de: "Er wartet vor der Ladentür auf den kleinen Buben und bellt weiter.",
+  },
+  { kind: "blank" },
+
+  {
+    kind: "line",
+    n: 21,
+    eg: "Leit gets assn Wech, da Wickn Drrrn kinnt,",
+    de: "Die Leute rufen, man solle aus dem Weg gehen, der Wickn Drrrn kommt,",
+  },
+  {
+    kind: "line",
+    n: 22,
+    eg: "Waal s’ Bejwl uu dea Huund koa Rücksicht nimmt.",
+    de: "Denn der Bub und der Hund nehmen auf niemanden Rücksicht.",
+  },
+  {
+    kind: "line",
+    n: 23,
+    eg: "Wickn Drrrn hoo neat ii dafunna,",
+    de: "Den Namen habe nicht ich erfunden,",
+  },
+  {
+    kind: "line",
+    n: 24,
+    eg: "Af dean Nåuma san Dorfleit va sölwa kumma.",
+    de: "sondern die Leute im Dorf sind selbst auf diesen Namen gekommen.",
+  },
+  { kind: "blank" },
+
+  {
+    kind: "line",
+    n: 25,
+    eg: "Waa s’ Pepperl neat gwaxn, waa dahoim ea bliem,",
+    de: "Wenn der Bub nicht gewachsen wäre und daheim geblieben wäre,",
+  },
+  {
+    kind: "line",
+    n: 26,
+    eg: "Nu heint täjtm(a)n häjan, mietn Drrn håut-a-se Zeit vatriem.",
+    de: "würde man ihn wohl heute noch hören, wie er sich mit dem „Drrrn“ die Zeit vertreibt.",
+  },
+  {
+    kind: "line",
+    n: 27,
+    eg: "Sechzich Gåua san seit dåmåls vagonga,",
+    de: "Sechzig Jahre sind seit damals vergangen,",
+  },
+  {
+    kind: "line",
+    n: 28,
+    eg: "Owa oan dej Drrrnzeit håuta quies oft nuu s’ Valonga.",
+    de: "aber nach dieser Drrrn-Zeit hat man noch immer Sehnsucht.",
+  },
+];
+---
+
+<BaseLayout title={chronik.title}>
+  <header class="head">
+    <h1>{chronik.title}</h1>
+    <p class="subtitle">{chronik.subtitle}</p>
+  </header>
+
+  <section class="intro">
+    Das Gedicht ist im Egerländer Dialekt geschrieben. Für jemanden, der mit
+    dieser Mundart nicht vertraut ist, ist es vermutlich kaum möglich, den Text
+    auf Anhieb zu verstehen. Obwohl meine Großeltern – und etwas weniger auch
+    meine Eltern – so gesprochen haben, muss selbst ich mir die Verse laut
+    vorlesen, um sie einigermaßen zu erfassen.
+    <br /><br />
+    Wenn du möchtest, kannst du das Egerländer Wörterbuch benutzen, das mein Onkel
+    Erich verfasst hat, um einzelne Wörter nachzuschlagen. Oder du klickst einfach
+    auf eine Zeile, die dir nicht ganz klar ist – dann wird erklärt, was dort gemeint
+    ist.
+    <br /><br />
+    Es lohnt sich jedenfalls, sich Zeit zu nehmen und das Gedicht Zeile für Zeile
+    zu verstehen, vielleicht sogar zu versuchen, den Klang der Sprache nachzuahmen.
+    Es ist sehr schön, witzig und liebevoll geschrieben und beschreibt auf beispielhafte
+    Weise, wie der große Bruder seinen kleinen Bruder erlebt und in Erinnerung behalten
+    hat.
+  </section>
+
+  <section
+    class="drrrn-sheet"
+    aria-label="Gedicht mit zeilengenauer Erklaerung"
+  >
+    <div class="drrrn-grid" id="drrrnGrid">
+      {
+        LINES.map((it, idx) => {
+          if (it.kind === "blank") {
+            return (
+              <div
+                class="drrrn-gap"
+                data-action="clear"
+                role="button"
+                tabindex="0"
+                aria-label="Leerzeile (Erklaerung schliessen)"
+              />
+            );
+          }
+
+          return (
+            <div class="drrrn-row" data-idx={idx}>
+              <div class="drrrn-cell-left">
+                <span
+                  class={`drrrn-line${it.isTitle ? " drrrn-title" : ""}`}
+                  role="button"
+                  tabindex="0"
+                  data-idx={idx}
+                  aria-label="Zeile anklicken, um Erklaerung zu sehen"
+                >
+                  {it.eg}
+                </span>
+              </div>
+
+              <div class="drrrn-cell-right">
+                {/* Erklärung startet in genau dieser Zeile, darf nach unten „überlaufen“,
+                  ohne dass links Zeilenabstand/Row-Höhe sich ändert */}
+                <div class="drrrn-explain" data-slot={idx} />
+              </div>
+            </div>
+          );
+        })
+      }
+    </div>
+
+    {/* JSON sicher einbetten (nicht escaped) */}
+    <script
+      type="application/json"
+      id="__DRRRN_LINES__"
+      set:html={JSON.stringify(LINES)}
+    />
+  </section>
+
+  <p class="poem-source">
+    Quelle: <em>Pechgrün – Geschichte und Erinnerungen</em>, Band 2 (1993)
+  </p>
+
+  <section class="intro">
+    Wer tiefer einsteigen möchte, findet im Egerländer Wörterbuch einzelne
+    Begriffe erklärt, die heute kaum noch geläufig sind. Und wer den Dialekt
+    nicht nur lesen, sondern auch hören will, kann ihn auf einer weiteren Seite
+    in gesprochener Form erleben. Denn gerade der Klang der Sprache gehört
+    untrennbar zu dem, was dieses Gedicht ausmacht.
+  </section>
+</BaseLayout>
+
+<script is:inline>
+  const data = JSON.parse(
+    document.getElementById("__DRRRN_LINES__")?.textContent || "[]"
+  );
+  const grid = document.getElementById("drrrnGrid");
+
+  function clearAll() {
+    for (const el of grid.querySelectorAll(".drrrn-explain.is-on")) {
+      el.classList.remove("is-on");
+      el.textContent = "";
+    }
+    for (const el of grid.querySelectorAll(".drrrn-line.is-active")) {
+      el.classList.remove("is-active");
+    }
+  }
+
+  function setActive(idx) {
+    const it = data[idx];
+    if (!it || it.kind !== "line") return;
+
+    clearAll();
+
+    const line = grid.querySelector(`.drrrn-line[data-idx="${idx}"]`);
+    if (line) line.classList.add("is-active");
+
+    const slot = grid.querySelector(`.drrrn-explain[data-slot="${idx}"]`);
+    if (slot) {
+      const t = (it.de || "").trim();
+      slot.textContent = t;
+      if (t.length) slot.classList.add("is-on");
+    }
+  }
+
+  function activateFromTarget(target) {
+    const el = target instanceof Element ? target : null;
+    if (!el) return;
+
+    if (el.closest(".drrrn-gap")) {
+      clearAll();
+      return;
+    }
+
+    const line = el.closest(".drrrn-line");
+    if (line) {
+      const idx = Number(line.getAttribute("data-idx"));
+      if (Number.isFinite(idx)) setActive(idx);
+    }
+  }
+
+  grid.addEventListener("click", (e) => activateFromTarget(e.target));
+
+  grid.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    activateFromTarget(e.target);
+    e.preventDefault();
+  });
+
+  clearAll();
+</script>
+
+<style>
+  /* ===== Kopf ===== */
+  .head {
+    margin-bottom: 1.6rem;
+  }
+  .head h1 {
+    margin: 0 0 0.35rem 0;
+  }
+  .subtitle {
+    margin: 0 0 0.35rem 0;
+    font-size: 1.15rem;
+    line-height: 1.35;
+    color: rgba(0, 0, 0, 0.78);
+  }
+  .author {
+    margin: 0 0 1.15rem 0;
+    font-size: 1rem;
+    color: rgba(0, 0, 0, 0.72);
+  }
+
+  /* ===== Sheet / Raster =====
+     Ziel: 2 Spalten, gleiche Typo, Gedicht links ohne Umbruch, Erklärung rechts mit Umbruch.
+     KEINE Buttons sichtbar (nur Text, dezent hover/active). */
+  .drrrn-sheet {
+    /* falls BaseLayout irgendwo overflow hidden setzt: hier wieder öffnen */
+    overflow: visible;
+  }
+
+  .drrrn-grid {
+    /* „Spreadsheet“ als Zeilenliste */
+    display: flex;
+    flex-direction: column;
+
+    /* Typo: einmal definieren, gilt links+rechts gleich */
+    font-size: 0.97rem;
+    line-height: 1.3;
+
+    overflow: visible;
+  }
+
+  .drrrn-row {
+    display: grid;
+    grid-template-columns: minmax(420px, 1fr) minmax(320px, 1fr);
+    column-gap: 1.25rem;
+    align-items: start;
+
+    /* wichtig: nichts clippen, Erklärung darf überlaufen */
+    overflow: visible;
+  }
+
+  /* ===== Links: Gedicht ===== */
+  .drrrn-cell-left {
+    overflow-x: auto; /* wenn eine Zeile doch zu lang ist: horizontal statt Umbruch */
+    overflow-y: visible;
+  }
+
+  .drrrn-line {
+    display: block;
+    white-space: nowrap; /* Gedichtzeile bleibt immer eine Zeile */
+    cursor: pointer;
+
+    /* keine Boxen, keine Rahmen */
+    padding: 0.02rem 0.1rem;
+    border-radius: 0.25rem;
+    color: rgba(0, 0, 0, 0.92);
+  }
+
+  .drrrn-line:hover {
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  .drrrn-line.is-active {
+    font-weight: 600;
+    background: rgba(0, 0, 0, 0.08);
+  }
+
+  .drrrn-line:focus-visible {
+    outline: 2px solid rgba(0, 0, 0, 0.35);
+    outline-offset: 2px;
+  }
+
+  /* Titel im Gedicht: gleiche Größe wie Zeilen */
+  .drrrn-title {
+    font-weight: 600;
+  }
+
+  /* ===== Rechts: Erklärung ===== */
+  .drrrn-cell-right {
+    position: relative;
+    min-height: 1.3em; /* exakt eine Rasterzeile hoch (Row wird NICHT höher) */
+    overflow: visible; /* Erklärung darf nach unten weiterlaufen */
+  }
+
+  .drrrn-explain {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    /* gleiche Typo wie links */
+    font: inherit;
+    color: rgba(0, 0, 0, 0.85);
+
+    /* darf umbrechen */
+    white-space: normal;
+
+    /* kein Button-Look */
+    padding: 0.02rem 0.1rem;
+    border-radius: 0.25rem;
+
+    opacity: 0;
+    transition: opacity 120ms ease;
+    pointer-events: none; /* soll nicht „im Weg“ sein */
+  }
+
+  .drrrn-explain.is-on {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  /* ===== Leerzeilen / Strophenabstände ===== */
+  .drrrn-gap {
+    height: 0.95rem; /* Strophen-Abstand */
+    cursor: pointer;
+    border-radius: 0.25rem;
+  }
+
+  .drrrn-gap:hover {
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  .drrrn-gap:focus-visible {
+    outline: 2px solid rgba(0, 0, 0, 0.25);
+    outline-offset: 2px;
+  }
+
+  /* Quelle unter dem Gedicht */
+  p.poem-source {
+    margin: 1.6rem 0 0 0 !important;
+    font-size: 0.95rem !important;
+    line-height: 1.35 !important;
+    color: rgba(0, 0, 0, 0.55) !important;
+  }
+
+  .intro {
+    margin-top: 2rem;
+    padding-top: 0.01px;
+    margin-bottom: 2rem;
+  }
+</style>

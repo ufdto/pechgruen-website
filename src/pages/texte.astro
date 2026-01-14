@@ -4,7 +4,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 // Wir nutzen die vorhandenen chronik-Exports der Textseiten,
 // damit Titel/Untertitel/Href nicht doppelt gepflegt werden müssen.
 import { chronik as aHooch } from "./a-hooch-aaf-unna-dorf.astro";
-import { chronik as meineErinnerungen } from "./meine-erinnerungen-heimatdorf-pechgruen.astro";
 import { chronik as egerlaenderMundart } from "./egerlaendermundart.astro";
 import { chronik as redelbachTeich } from "./redelbach-teich.astro";
 
@@ -22,14 +21,6 @@ const intro =
   "Hier sammeln wir veröffentlichte Texte aus den Pechgrüner Erinnerungsbänden – ergänzt um Stimmen und audiovisuelle Zeugnisse. Die Originale bleiben unverändert; die Hinweise hier dienen der Einordnung und als Lese- oder Hörhilfe.";
 
 const entries = [
-  {
-    ...meineErinnerungen,
-    author: "Erich Heinzl",
-    note: "Ein integrativer, erzählerischer Text: Dorf, Landschaft, Wege, Teiche und Höfe werden so beschrieben, dass man als Leser wirklich „mitgeht“. Deutlich zugänglicher und sehr bildlich – der Text verträgt einzelne, sorgfältig ausgewählte Fotos zur Abrundung (ohne Bilderzwang).",
-    tags: ["Dorfportrait", "Landschaft", "Wege", "gut lesbar"],
-    suggestion:
-      "Guter Einstiegstext für Außenstehende. Optional später mit 2–4 historischen Fotos ergänzbar.",
-  },
   {
     ...aHooch,
     author: "Erich Heinzl",
@@ -55,6 +46,16 @@ const entries = [
     tags: ["Wörterbuch", "Mundart", "Sprache", "Erinnerung", "Alltag"],
     suggestion:
       "Zum Stöbern und Wiederentdecken einzelner Wörter – weniger zum systematischen Nachschlagen.",
+  },
+  {
+    title: "Da Drrrn",
+    subtitle: "Ein Gedicht von Erich Heinzl über das Pepperl, seinen kleinen Bruder",
+    href: "/da-drrrn",
+    author: "Erich Heinzl",
+    note: "Ein liebevoll und mit leisem Humor geschriebenes Gedicht im Egerländer Dialekt. Zeile für Zeile erzählt es von Kindheit, Geschwisterbeziehung und dem Klang einer Sprache, die heute kaum noch gesprochen wird. Der Text erschließt sich erst im genauen Lesen – und im Hören der Worte.",
+    tags: ["Gedicht", "Mundart", "Egerland", "Erinnerung", "Familie"],
+    suggestion:
+      "Zum langsamen Lesen und Entdecken – am besten Zeile für Zeile, mit Blick auf Sprache und Klang.",
   },
   {
     ...redelbachTeich,

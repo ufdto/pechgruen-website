@@ -36,11 +36,11 @@ import { chronik as gallery } from "./personen/gallery.astro";
 
 // Texte (Heinzl)
 import { chronik as aHooch } from "./a-hooch-aaf-unna-dorf.astro";
-import { chronik as meineErinnerungen } from "./meine-erinnerungen-heimatdorf-pechgruen.astro";
 import { chronik as texteUebersicht } from "./texte.astro";
 import { chronik as egerlaenderMundart } from "./egerlaendermundart.astro";
 import { chronik as redelbachTeich } from "./redelbach-teich.astro";
 import { chronik as woerterbuch } from "./egerlaenderwoerterbuch.astro";
+import { chronik as daDrrrn } from "./da-drrrn.astro";
 
 // Redelbach
 import { chronik as redelbachIndex } from "./redelbach/index.astro";
@@ -397,19 +397,46 @@ const landschaftCombined = [...landschaftContentItems, ...landschaftPages].sort(
 
       <div class="acc-body">
         <ul>
-          <li><a href={texteUebersicht.href}>{texteUebersicht.title}</a></li>
+          <li>
+            <a href={texteUebersicht.href}>{texteUebersicht.title}</a>
+            {
+              texteUebersicht.subtitle ? (
+                <span> — {texteUebersicht.subtitle}</span>
+              ) : null
+            }
+          </li>
           <li>
             <a href={egerlaenderMundart.href}>{egerlaenderMundart.title}</a>
+            {
+              egerlaenderMundart.subtitle ? (
+                <span> — {egerlaenderMundart.subtitle}</span>
+              ) : null
+            }
           </li>
           <li>
             <a href={woerterbuch.href}>{woerterbuch.title}</a>
-             {woerterbuch.subtitle ? <span> — {woerterbuch.subtitle}</span> : null}
+            {
+              woerterbuch.subtitle ? (
+                <span> — {woerterbuch.subtitle}</span>
+              ) : null
+            }
           </li>
           <li>
-            <a href={meineErinnerungen.href}>{meineErinnerungen.title}</a>
+            <a href={daDrrrn.href}>{daDrrrn.title}</a>
+            {daDrrrn.subtitle ? <span> — {daDrrrn.subtitle}</span> : null}
           </li>
-          <li><a href={aHooch.href}>{aHooch.title}</a></li>
-          <li><a href={redelbachTeich.href}>{redelbachTeich.title}</a></li>
+          <li>
+            <a href={aHooch.href}>{aHooch.title}</a>
+            {aHooch.subtitle ? <span> — {aHooch.subtitle}</span> : null}
+          </li>
+          <li>
+            <a href={redelbachTeich.href}>{redelbachTeich.title}</a>
+            {
+              redelbachTeich.subtitle ? (
+                <span> — {redelbachTeich.subtitle}</span>
+              ) : null
+            }
+          </li>
         </ul>
       </div>
     </section>
@@ -477,7 +504,25 @@ const landschaftCombined = [...landschaftContentItems, ...landschaftPages].sort(
       sync(expanded);
 
       btn.addEventListener("click", () => {
-        expanded = !expanded;
+        const next = btn.getAttribute("aria-expanded") !== "true";
+
+        // ✅ alle anderen schließen (max. ein Bereich offen)
+        sections.forEach((otherSec) => {
+          if (otherSec === sec) return;
+
+          const otherId = otherSec.getAttribute("data-acc-id") || "";
+          const otherBtn = otherSec.querySelector(".acc-head");
+          const otherBody = otherSec.querySelector(".acc-body");
+          const otherArrow = otherSec.querySelector(".acc-arrow");
+          if (!otherBtn || !otherBody || !otherArrow) return;
+
+          otherBtn.setAttribute("aria-expanded", "false");
+          otherBody.hidden = true;
+          otherArrow.textContent = "▼";
+          if (otherId) state[otherId] = false;
+        });
+
+        expanded = next;
         sync(expanded);
 
         if (id) {
