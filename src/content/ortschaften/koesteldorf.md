@@ -49,7 +49,7 @@ y: 2280
 </figure>
 
 <p>
-  Die Karte zeigt mehrere Wege und Verbindungen zwischen den Orten der Hochfläche. Man kann von Pechgrün direkt nach Kofl gehen, nach Neuhäuser oder weiter nach Schwarzenbach; ebenso bestehen Verbindungen zwischen Neuhäuser, Kösteldorf und Schwarzenbach. Für Pechgrün waren jedoch zwei Wege nach Kösteldorf von besonderer Bedeutung. Sie stellten die Hauptverbindungen dar und sind auch in den Wegebeschreibungen auf der Seite zu Pechgrün ausführlicher beschrieben.
+  Die Karte zeigt mehrere Wege und Verbindungen zwischen den Orten der Hochfläche. Man kann von Pechgrün direkt nach Kofl gehen, nach Neuhäuser oder weiter nach Schwarzenbach; ebenso bestehen Verbindungen zwischen Neuhäuser, Kösteldorf und Schwarzenbach. Für Pechgrün waren jedoch zwei Wege nach Kösteldorf von besonderer Bedeutung. Sie stellten die Hauptverbindungen dar und sind auch im Bereich Wege ausführlicher beschrieben.
 </p>
 
 <p>
