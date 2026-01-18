@@ -1,6 +1,6 @@
 ---
 title: "Pechöfen"
-subtitle: "Nachbarort von Pechgrün"
+subtitle: "Zwischen Voigtsgrün und Pechgrün"
 date: 2026-01-17
 order: 40
 
