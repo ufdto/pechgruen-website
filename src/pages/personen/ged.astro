@@ -1,0 +1,306 @@
+---
+const title = "GED Browser (Pechgrün subset)";
+---
+
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <style>
+      body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+      header { padding: 12px 16px; border-bottom: 1px solid #ddd; }
+      .wrap { display: grid; grid-template-columns: 280px 420px 1fr; height: calc(100vh - 52px); }
+      .col { overflow: auto; border-right: 1px solid #eee; }
+      .col:last-child { border-right: none; }
+      .pane { padding: 12px; }
+      .list { list-style: none; padding: 0; margin: 0; }
+      .list li { padding: 6px 8px; border-bottom: 1px solid #f1f1f1; cursor: pointer; }
+      .list li:hover { background: #f7f7f7; }
+      .list li.active { background: #e9f2ff; }
+      .muted { color: #666; font-size: 12px; }
+      .h { font-weight: 700; margin: 0 0 8px 0; }
+      .block { margin: 14px 0; }
+      .row { margin: 4px 0; }
+      .btnlink { color: #0b57d0; cursor: pointer; text-decoration: underline; }
+      .pill { display: inline-block; padding: 2px 8px; border: 1px solid #ddd; border-radius: 999px; font-size: 12px; margin-left: 8px; color: #444; }
+      .k { color: #666; }
+      .nameLine { font-weight: 600; }
+      .metaLine { margin-top: 2px; }
+      .tight li { padding-top: 8px; padding-bottom: 8px; }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <strong>{title}</strong>
+      <span class="pill">Index: surnames → persons</span>
+      <span class="muted" style="margin-left: 10px">Data: /data/ged/*.json</span>
+    </header>
+
+    <div class="wrap">
+      <div class="col">
+        <div class="pane">
+          <div class="h">Nachnamen</div>
+          <ul id="surnameList" class="list"></ul>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="pane">
+          <div class="h">Personen</div>
+          <div class="muted" id="peopleMeta"></div>
+          <ul id="peopleList" class="list tight"></ul>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="pane" id="detailPane">
+          <div class="muted">Person auswählen …</div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      const $ = (id) => document.getElementById(id);
+      const DATA_BASE = "/data/ged";
+
+      const state = {
+        surnames: [],
+        surnameToPersons: {},
+        people: {},
+        families: {},
+        currentSurname: null,
+        currentPersonId: null,
+      };
+
+      function qsGet(key) {
+        return new URL(location.href).searchParams.get(key);
+      }
+      function qsSet(key, val) {
+        const u = new URL(location.href);
+        if (val == null) u.searchParams.delete(key);
+        else u.searchParams.set(key, val);
+        history.pushState({}, "", u);
+      }
+
+      function shortPlace(place) {
+        if (!place) return "";
+        const parts = place.split(",").map(s => s.trim()).filter(Boolean);
+        return parts.slice(0, 2).join(", ");
+      }
+
+      function shortDate(d) {
+        if (!d) return "";
+        // Keep as-is (GRAMPS style). If you later want only year, we can change this.
+        return d.trim();
+      }
+
+      function personMetaText(p) {
+        const b = p?.birth || {};
+        const d = p?.death || {};
+        const bDate = shortDate(b.date) || "?";
+        const bPlace = shortPlace(b.place) || "?";
+        const dDate = shortDate(d.date) || "?";
+        const dPlace = shortPlace(d.place) || "?";
+        return `* ${bDate} ${bPlace} · † ${dDate} ${dPlace}`;
+      }
+
+      function personLabel(pid) {
+        if (!pid) {
+          return { html: `<span class="muted">unknown</span>`, clickable: false };
+        }
+        const p = state.people[pid];
+        if (!p) {
+          return { html: `<span class="muted">${pid} (outside subset)</span>`, clickable: false };
+        }
+
+        const meta = personMetaText(p);
+        const html = `
+          <div class="nameLine">${p.name.display}</div>
+          <div class="muted metaLine">${meta}</div>
+        `.trim();
+
+        return { html, clickable: true };
+      }
+
+      function renderSurnames() {
+        const ul = $("surnameList");
+        ul.innerHTML = "";
+        for (const s of state.surnames) {
+          const li = document.createElement("li");
+          li.textContent = s;
+          if (s === state.currentSurname) li.classList.add("active");
+          li.onclick = () => {
+            state.currentSurname = s;
+            state.currentPersonId = null;
+            qsSet("sn", s);
+            qsSet("pid", null);
+            renderSurnames();
+            renderPeopleList();
+            renderDetail();
+          };
+          ul.appendChild(li);
+        }
+      }
+
+      function renderPeopleList() {
+        const ul = $("peopleList");
+        ul.innerHTML = "";
+        const ids = state.surnameToPersons[state.currentSurname] || [];
+        $("peopleMeta").textContent = `${ids.length} Personen`;
+
+        for (const id of ids) {
+          const info = personLabel(id);
+          const li = document.createElement("li");
+          li.innerHTML = info.html;
+          if (id === state.currentPersonId) li.classList.add("active");
+          li.onclick = () => {
+            state.currentPersonId = id;
+            qsSet("pid", id);
+            renderPeopleList();
+            renderDetail();
+          };
+          ul.appendChild(li);
+        }
+      }
+
+      function renderDetail() {
+        const pane = $("detailPane");
+        const id = state.currentPersonId;
+        if (!id || !state.people[id]) {
+          pane.innerHTML = `<div class="muted">Person auswählen …</div>`;
+          return;
+        }
+
+        const p = state.people[id];
+
+        function linkHtml(pid) {
+          const info = personLabel(pid);
+          if (!info.clickable) return info.html;
+          return `<span class="btnlink" data-pid="${pid}">${info.html}</span>`;
+        }
+
+        const famc = p.famc?.[0];
+        const parentsFam = famc ? state.families[famc] : null;
+
+        const father = parentsFam?.husband ?? null;
+        const mother = parentsFam?.wife ?? null;
+        const siblings = parentsFam?.children?.filter(cid => cid !== id) ?? [];
+
+        const unions = (p.fams || []).map(fid => state.families[fid]).filter(Boolean);
+
+        pane.innerHTML = `
+          <div class="h">${p.name.display}</div>
+
+          <div class="row"><span class="k">Geboren:</span> ${p.birth?.date ?? "?"} ${p.birth?.place ?? ""}</div>
+          <div class="row"><span class="k">Gestorben:</span> ${p.death?.date ?? "?"} ${p.death?.place ?? ""}</div>
+          ${p.occupation ? `<div class="row"><span class="k">Beruf:</span> ${p.occupation}</div>` : ""}
+          <div class="row muted">ID: ${p.id}</div>
+
+          <div class="block">
+            <div class="h">Eltern</div>
+            <div class="row"><span class="k">Vater:</span> ${linkHtml(father)}</div>
+            <div class="row"><span class="k">Mutter:</span> ${linkHtml(mother)}</div>
+          </div>
+
+          ${siblings.length ? `
+          <div class="block">
+            <div class="h">Geschwister</div>
+            <ul class="list tight">
+              ${siblings.map(pid => `<li>${linkHtml(pid)}</li>`).join("")}
+            </ul>
+          </div>` : ""}
+
+          <div class="block">
+            <div class="h">Ehen / Partnerschaften</div>
+            ${unions.length ? unions.map(f => {
+              const partnerId = (f.husband === id) ? f.wife : f.husband;
+              return `
+                <div style="padding:10px;border:1px solid #eee;border-radius:10px;margin:8px 0;">
+                  <div class="row"><span class="k">Partner:</span> ${linkHtml(partnerId)}</div>
+                  <div class="row"><span class="k">Heirat:</span> ${f.marriage?.date ?? "?"} ${f.marriage?.place ?? ""}</div>
+                  <div class="row"><span class="k">Kinder:</span></div>
+                  ${f.children?.length ? `
+                    <ul class="list tight">
+                      ${f.children.map(cid => `<li>${linkHtml(cid)}</li>`).join("")}
+                    </ul>` : `<div class="muted">keine</div>`}
+                </div>`;
+            }).join("") : `<div class="muted">keine</div>`}
+          </div>
+        `;
+
+        // Klicks innerhalb der Detailansicht verdrahten
+        pane.querySelectorAll("[data-pid]").forEach(el => {
+          el.onclick = () => {
+            const pid = el.getAttribute("data-pid");
+            if (!state.people[pid]) return;
+
+            state.currentPersonId = pid;
+
+            // Nachname setzen (Index-Keys sind bereits UPPERCASE / "(UNKNOWN)")
+            const sn = (state.people[pid].name.surname || "").trim().toUpperCase() || "(UNKNOWN)";
+            state.currentSurname = sn;
+
+            qsSet("pid", pid);
+            qsSet("sn", sn);
+
+            renderSurnames();
+            renderPeopleList();
+            renderDetail();
+          };
+        });
+      }
+
+      async function loadAll() {
+        const [surnames, surnameToPersons, people, families] = await Promise.all([
+          fetch(`${DATA_BASE}/surnames.json`).then(r => r.json()),
+          fetch(`${DATA_BASE}/surnameToPersons.json`).then(r => r.json()),
+          fetch(`${DATA_BASE}/people.json`).then(r => r.json()),
+          fetch(`${DATA_BASE}/families.json`).then(r => r.json()),
+        ]);
+
+        state.surnames = surnames;
+        state.surnameToPersons = surnameToPersons;
+        state.people = people;
+        state.families = families;
+
+        // Init aus URL
+        const sn = qsGet("sn");
+        const pid = qsGet("pid");
+
+        if (pid && state.people[pid]) {
+          state.currentPersonId = pid;
+          state.currentSurname = (state.people[pid].name.surname || "").trim().toUpperCase() || "(UNKNOWN)";
+        } else if (sn && state.surnameToPersons[sn]) {
+          state.currentSurname = sn;
+          state.currentPersonId = (state.surnameToPersons[sn] || [])[0] || null;
+        } else {
+          state.currentSurname = state.surnames[0] || null;
+          state.currentPersonId = state.currentSurname ? (state.surnameToPersons[state.currentSurname] || [])[0] || null : null;
+        }
+
+        renderSurnames();
+        renderPeopleList();
+        renderDetail();
+      }
+
+      window.onpopstate = () => {
+        const sn = qsGet("sn");
+        const pid = qsGet("pid");
+
+        state.currentSurname = (sn && state.surnameToPersons[sn]) ? sn : (state.surnames[0] || null);
+        state.currentPersonId = (pid && state.people[pid]) ? pid : null;
+
+        renderSurnames();
+        renderPeopleList();
+        renderDetail();
+      };
+
+      loadAll().catch(err => {
+        console.error(err);
+        $("detailPane").innerHTML = `<pre class="muted">${String(err)}</pre>`;
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,467 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export const chronik = {
+  title: "Personen- und Familienbericht",
+  subtitle: "Lebensdaten und familiäre Beziehungen einer Person",
+  date: "2026-01-24",
+  bereich: "Personen",
+  href: "/internal/ged-person",
+  order: 22,
+};
+---
+
+<BaseLayout title={`${chronik.title} – Person`}>
+  <article class="page ged-page">
+    <!-- STATIC PAGE HEADER (never touched by JS) -->
+    <header class="head">
+      <h1>{chronik.title}</h1>
+      <p class="subtitle">{chronik.subtitle}</p>
+      <p class="meta">{chronik.date}</p>
+    </header>
+
+    <!-- DYNAMIC PERSON HEADER -->
+    <div class="person-head">
+      <div class="personName" id="personName">…</div>
+      <div class="personLines" id="personLines">
+        <div class="line">…</div>
+      </div>
+    </div>
+
+    <div class="navhint muted">Tipp: Klick auf einen Namen führt zur jeweiligen Person.</div>
+
+    <hr class="sep section-sep" />
+
+    <div class="ged-person">
+      <!-- UNIONS + CHILDREN -->
+      <section class="block" id="blockUnions">
+        <div class="blockBody" id="unionsBody">
+          <div class="muted">Lade Daten …</div>
+        </div>
+      </section>
+
+      <hr class="sep section-sep" />
+
+      <!-- PARENTS + SIBLINGS -->
+      <section class="block" id="blockParents" style="margin-top: 14px;">
+        <div class="blockBody" id="parentsBody">
+          <div class="muted">Lade Daten …</div>
+        </div>
+      </section>
+    </div>
+  </article>
+
+  <style is:global>
+    .ged-page.page { width: 100%; margin: 0; }
+
+    /* --- header spacing like your “good” slug --- */
+    .ged-page .head { margin-bottom: 1.1rem; }
+    .ged-page .head h1 { margin: 0 0 0.25rem 0; }
+    .ged-page .head .subtitle {
+      margin: 0 0 0.4rem 0;
+      color: rgba(0, 0, 0, 0.65);
+      font-size: 1.05rem;
+    }
+    .ged-page .head .meta {
+      margin: 0;
+      font-size: 0.85rem;
+      color: rgba(0, 0, 0, 0.45);
+    }
+
+    /* --- dynamic person header (content) --- */
+    .ged-page .person-head {
+      max-width: 1100px;
+      margin: 0 auto 0.9rem auto;
+      padding: 0;
+      color: #000;
+    }
+
+    .ged-page .personName {
+      font-weight: 800;
+      font-size: 1.5rem; /* name bigger */
+      line-height: 1.15;
+      margin: 0 0 0.25rem 0;
+      color: #000;
+    }
+
+    .ged-page .personLines .line {
+      margin: 0;
+      padding: 0;
+      line-height: 1.25;
+      color: #000;
+    }
+
+    .ged-page .navhint{
+      max-width: 1100px;
+      margin: 0 auto 0.6rem auto;
+      font-size: 0.92rem;
+      color: rgba(0,0,0,0.65);
+    }
+
+    /* --- main content --- */
+    .ged-page .ged-person {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0;
+      color: #000;
+
+      /* Critical: keep size consistent with personLines (your “balanced” look) */
+      font-size: 1rem;
+    }
+
+    .ged-page .muted { color: rgba(0,0,0,0.55); font-size: 13px; }
+
+    /* --- blocks --- */
+    .ged-page .block { margin: 0; }
+
+    /* Headings inside content — tight */
+    .ged-page h3 {
+      margin: 0.65rem 0 0.10rem 0;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #000;
+    }
+
+    /* Label lines (Vater/Mutter, Heirat, partner line) */
+    .ged-page .kv {
+      margin: 0.06rem 0;
+      line-height: 1.22;
+      color: #000;
+      font-size: inherit;
+    }
+
+    /* Labels bold */
+    .ged-page .k {
+      font-weight: 400;
+      color: #000;
+    }
+
+    /* Names bold */
+    .ged-page .pname { font-weight: 800; color: #000; }
+
+    /* Links: black, no underline (kill BaseLayout styling too) */
+    .ged-page a.plink,
+    .ged-page a.plink:visited,
+    .ged-page a.plink:hover,
+    .ged-page a.plink:active {
+      color: #000 !important;
+      text-decoration: none !important;
+      border-bottom: none !important;
+      box-shadow: none !important;
+      background: none !important;
+      background-image: none !important;
+      cursor: pointer;
+    }
+    .ged-page a.plink * { text-decoration: none !important; }
+
+    /* Bullets: robust (not list-style), cannot be removed by global CSS */
+    .ged-page ul.bullets{
+      list-style: none !important;
+      margin: 0.10rem 0 1.1rem 0;
+      padding: 0;
+    }
+    .ged-page ul.bullets li{
+      margin: 0.10rem 0;
+      line-height: 1.22;
+      color: #000;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      position: relative;
+      padding-left: 1.05rem;   /* indent */
+      font-size: inherit;
+    }
+    .ged-page ul.bullets li::before{
+      content: "•";
+      position: absolute;
+      left: 0;
+      top: 0;
+      line-height: 1.22;
+    }
+
+    @media (max-width: 900px) {
+      .ged-page ul.bullets li {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+      }
+    }
+  </style>
+
+  <script type="module">
+    const DATA_BASE = "/data/ged";
+    const $ = (id) => document.getElementById(id);
+
+    function qsGet(key) { return new URL(location.href).searchParams.get(key); }
+
+    function shortPlace(place) {
+      if (!place) return "";
+      return place
+        .split(",")
+        .map(s => s.trim())
+        .filter(Boolean)
+        .slice(0, 2)
+        .join(", ");
+    }
+
+    function fmtEvent(prefix, ev, { useShortPlace = false } = {}) {
+      const d = ev?.date || "?";
+      const p = ev?.place || "";
+      const pp = useShortPlace ? shortPlace(p) : p;
+      return pp ? `${prefix} ${d} in ${pp}` : `${prefix} ${d}`;
+    }
+
+    // One-line combined life text for lists: "* ... , † ..."
+    function fmtLifeInline(p, { useShortPlace = true } = {}) {
+      const b = fmtEvent("*", p?.birth, { useShortPlace });
+      const d = fmtEvent("†", p?.death, { useShortPlace });
+      return `${b}, ${d}`;
+    }
+
+    function linkToPerson(pid, sn, az) {
+      return `/internal/ged-person?id=${encodeURIComponent(pid)}&sn=${encodeURIComponent(sn || "")}&az=${encodeURIComponent(az || "")}`;
+    }
+
+    // Person line: "Name, * ... , † ..."
+    function personLinkHtml(people, pid, sn, az, { useShortPlace = true } = {}) {
+      if (!pid) return `<span class="muted">unknown</span>`;
+      const p = people[pid];
+      if (!p) return `<span class="muted">${pid} (outside subset)</span>`;
+
+      const href = linkToPerson(pid, sn, az);
+      const life = fmtLifeInline(p, { useShortPlace });
+
+      return `
+        <a class="plink" href="${href}">
+          <span class="pname">${p.name.display}</span>, ${life}
+        </a>
+      `.trim();
+    }
+
+    function marriageLineHtml(f, { useShortPlace = false } = {}) {
+      if (!(f?.marriage?.date || f?.marriage?.place)) return "";
+      const d = f.marriage?.date || "?";
+      const p = f.marriage?.place || "";
+      const pp = useShortPlace ? shortPlace(p) : p;
+      const tail = pp ? `${d} in ${pp}` : `${d}`;
+      return `<div class="kv"><span class="k">Heirat:</span> ${tail}</div>`;
+    }
+
+    // --- Sorting helpers (your priority rules) ---
+    function parseYear(dateStr) {
+      if (!dateStr) return null;
+      const m = String(dateStr).match(/\b(\d{4})\b/);
+      return m ? parseInt(m[1], 10) : null;
+    }
+
+    // Priority 2: children — use the latest child birth year available per union
+    function unionChildrenMaxYear(f, people) {
+      let maxY = null;
+      const kids = (f?.children || []).filter(Boolean);
+      for (const cid of kids) {
+        const y = parseYear(people[cid]?.birth?.date);
+        if (y != null && (maxY == null || y > maxY)) maxY = y;
+      }
+      return maxY;
+    }
+
+    function spouseBirthYear(f, people) {
+      // use wife birth year (your rule)
+      const wid = f?.wife;
+      return wid ? parseYear(people[wid]?.birth?.date) : null;
+    }
+
+    function ordinalDE(n) {
+      const map = {
+        1: "Erster",
+        2: "Zweiter",
+        3: "Dritter",
+        4: "Vierter",
+        5: "Fünfter",
+        6: "Sechster",
+        7: "Siebter",
+        8: "Achter",
+        9: "Neunter",
+        10: "Zehnter",
+      };
+      return map[n] || `${n}.`;
+    }
+
+    async function load() {
+      const id = qsGet("id");
+      const sn = qsGet("sn");
+      const az = qsGet("az");
+
+      const personNameEl = $("personName");
+      const personLinesEl = $("personLines");
+
+      if (!id) {
+        personNameEl.textContent = "Keine Person gewählt.";
+        personLinesEl.innerHTML = "";
+        $("unionsBody").innerHTML = `<div class="muted">—</div>`;
+        $("parentsBody").innerHTML = `<div class="muted">—</div>`;
+        return;
+      }
+
+      const [people, families] = await Promise.all([
+        fetch(`${DATA_BASE}/people.json`).then(r => r.json()),
+        fetch(`${DATA_BASE}/families.json`).then(r => r.json()),
+      ]);
+
+      const p = people[id];
+      if (!p) {
+        personNameEl.textContent = `Nicht im Subset: ${id}`;
+        personLinesEl.innerHTML =
+          `<div class="muted">Diese Person ist im aktuellen Pechgrün-Subset nicht enthalten.</div>`;
+        $("unionsBody").innerHTML = `<div class="muted">outside subset</div>`;
+        $("parentsBody").innerHTML = `<div class="muted">outside subset</div>`;
+        return;
+      }
+
+      // Person head (all undereinander)
+      personNameEl.textContent = p.name.display;
+
+      const bLine = fmtEvent("*", p.birth, { useShortPlace: false });
+      const dLine = fmtEvent("†", p.death, { useShortPlace: false });
+      const occLine = p.occupation ? `Beruf: ${p.occupation}` : "";
+
+      personLinesEl.innerHTML = `
+        <div class="line">${bLine}</div>
+        <div class="line">${dLine}</div>
+        ${occLine ? `<div class="line">${occLine}</div>` : ``}
+      `;
+
+      // --- UNIONS: build + sort per your priority rules ---
+      const rawFams = (p.fams || []).map(fid => families[fid]).filter(Boolean);
+
+      if (!rawFams.length) {
+        $("unionsBody").innerHTML = `<div class="muted">keine bekannten Ehen</div>`;
+      } else {
+        const decorated = rawFams.map((f, idx) => {
+          const marriageY = parseYear(f?.marriage?.date);
+          const kidsMaxY = unionChildrenMaxYear(f, people);
+          const wifeY = spouseBirthYear(f, people);
+          return { f, idx, marriageY, kidsMaxY, wifeY };
+        });
+
+        decorated.sort((a, b) => {
+          // Priority 1: marriage year
+          if (a.marriageY != null && b.marriageY != null) return a.marriageY - b.marriageY;
+          if (a.marriageY != null) return -1;
+          if (b.marriageY != null) return 1;
+
+          // Priority 2: children (latest child year per union)
+          if (a.kidsMaxY != null && b.kidsMaxY != null) return a.kidsMaxY - b.kidsMaxY;
+          if (a.kidsMaxY != null) return -1;
+          if (b.kidsMaxY != null) return 1;
+
+          // Priority 3: wife birth year (older wife = earlier marriage)
+          if (a.wifeY != null && b.wifeY != null) return a.wifeY - b.wifeY;
+          if (a.wifeY != null) return -1;
+          if (b.wifeY != null) return 1;
+
+          // Priority 4: original order
+          return a.idx - b.idx;
+        });
+
+        const fams = decorated.map(x => x.f);
+
+        // --- render (Variant B, no separator line) ---
+        const unionsHtml = fams.map((f, i) => {
+          const partnerId = (f.husband === id) ? f.wife : f.husband;
+
+          const partnerHtml = partnerId
+            ? personLinkHtml(people, partnerId, sn, az, { useShortPlace: true })
+            : `<span class="muted">unknown</span>`;
+
+          const kids = (f.children || []).filter(Boolean);
+
+          const kidsHtml = kids.length
+            ? `<ul class="bullets">
+                ${kids.map(cid => `<li>${personLinkHtml(people, cid, sn, az, { useShortPlace: true })}</li>`).join("")}
+              </ul>`
+            : `<div class="muted">keine</div>`;
+
+          const multiple = fams.length > 1;
+
+          const heading = multiple
+            ? `${ordinalDE(i + 1)} Ehegatte`
+            : `Ehegatte`;
+
+          return `
+            <h3>${heading}</h3>
+            <div class="kv">${partnerHtml}</div>
+            ${marriageLineHtml(f, { useShortPlace: false })}
+            <h3>Kinder</h3>
+            ${kidsHtml}
+          `;
+        }).join("");
+
+        $("unionsBody").innerHTML = unionsHtml;
+      }
+
+      // --- PARENTS + SIBLINGS ---
+      const famc = (p.famc && p.famc.length) ? p.famc[0] : null;
+      const pf = famc ? families[famc] : null;
+
+      const fatherId = pf?.husband || null;
+      const motherId = pf?.wife || null;
+      const siblingIds = (pf?.children || []).filter(cid => cid && cid !== id);
+
+      const fatherInSubset = fatherId && people[fatherId];
+      const motherInSubset = motherId && people[motherId];
+
+      // Wenn weder Vater noch Mutter im Subset sind: ganzen Block unterdrücken
+      if (!fatherInSubset && !motherInSubset) {
+        $("parentsBody").innerHTML = ``;              // komplett leer
+        document.getElementById("blockParents")?.remove();  // optional: Section ganz entfernen
+        return;                                       // wenn du willst, nach unions schon fertig
+      }
+
+      const fatherHtml = fatherInSubset
+        ? personLinkHtml(people, fatherId, sn, az, { useShortPlace: true })
+        : `<span class="muted">—</span>`;
+
+      const motherHtml = motherInSubset
+        ? personLinkHtml(people, motherId, sn, az, { useShortPlace: true })
+        : `<span class="muted">—</span>`;
+
+      // Eltern-Heirat nur zeigen, wenn mind. ein Elternteil im Subset ist
+      const parentsMarriageHtml =
+        pf ? marriageLineHtml(pf, { useShortPlace: false }) : "";
+
+      const sibHtml = siblingIds.length
+        ? `<ul class="bullets">
+            ${siblingIds
+              .filter(sid => sid && people[sid])   // nur Geschwister im Subset
+              .map(sid => `<li>${personLinkHtml(people, sid, sn, az, { useShortPlace: true })}</li>`)
+              .join("")}
+          </ul>`
+        : `<div class="muted">keine</div>`;
+
+      $("parentsBody").innerHTML = `
+        <h3>Eltern</h3>
+        <div class="kv">Vater: ${fatherHtml}</div>
+        <div class="kv">Mutter: ${motherHtml}</div>
+        ${parentsMarriageHtml}
+        <h3>Geschwister</h3>
+        ${sibHtml}
+      `;
+
+      
+    }
+
+    load().catch(err => {
+      console.error(err);
+      const personNameEl = document.getElementById("personName");
+      const personLinesEl = document.getElementById("personLines");
+      if (personNameEl) personNameEl.textContent = "Fehler";
+      if (personLinesEl) personLinesEl.textContent = String(err);
+      const u = document.getElementById("unionsBody");
+      const p = document.getElementById("parentsBody");
+      if (u) u.innerHTML = `<div class="muted">Fehler</div>`;
+      if (p) p.innerHTML = `<div class="muted">Fehler</div>`;
+    });
+  </script>
+</BaseLayout>

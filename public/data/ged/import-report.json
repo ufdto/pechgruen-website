@@ -1,0 +1,48 @@
+{
+  "inputFile": "/Users/ufdto/Desktop/test.ged",
+  "outputDir": "public/data/ged",
+  "counts": {
+    "individuals": 3141,
+    "families": 1468
+  },
+  "ignoredTagsTop": {
+    "TYPE": 4974,
+    "FACT": 4609,
+    "_UID": 4609,
+    "CHAN": 4609,
+    "TIME": 4609,
+    "DATE": 4397,
+    "PEDI": 2680,
+    "AGE": 1659,
+    "SOUR": 817,
+    "QUAY": 817,
+    "DATA": 817,
+    "TEXT": 817,
+    "PAGE": 540,
+    "CONC": 493,
+    "EVEN": 430,
+    "NOTE": 337,
+    "PLAC": 91,
+    "BURI": 21,
+    "CAUS": 20,
+    "RESI": 11,
+    "CHR": 9,
+    "ROLE": 8,
+    "RELI": 7,
+    "DSCR": 3,
+    "BAPM": 2,
+    "NSFX": 1,
+    "EDUC": 1,
+    "MARL": 1,
+    "DIV": 1
+  },
+  "warnings": {
+    "brokenRefs": 0,
+    "externalRefs": 0,
+    "notes": "External refs are expected in a Pechgrün subset; broken refs indicate malformed GED or parsing issues."
+  },
+  "parseErrors": 0,
+  "examples": {
+    "brokenRefSamples": []
+  }
+}

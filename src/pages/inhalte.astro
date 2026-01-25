@@ -32,6 +32,7 @@ import { chronik as ortschaftenUmPechgruen } from "./nachbarorte/um-pechgruen.as
 // Personen (Werkzeuge)
 import { chronik as personenEinwohnermeldebuch } from "./personen-einwohnermeldebuch.astro";
 import { chronik as personenStammbaum } from "./personen-stammbaum.astro";
+import { chronik as gedNamen } from "./personen/ged-namen.astro";
 import { chronik as gallery } from "./personen/gallery.astro";
 
 // Texte (Heinzl)
@@ -356,6 +357,10 @@ const landschaftCombined = [...landschaftContentItems, ...landschaftPages].sort(
           </li>
           <li>
             <a href={personenStammbaum.href}>{personenStammbaum.title}</a>
+          </li>
+          <li>
+            <a href={gedNamen.href}>{gedNamen.title}</a>
+            {gedNamen.subtitle ? <span> — {gedNamen.subtitle}</span> : null}
           </li>
           <!-- Galerie -->
           <li>

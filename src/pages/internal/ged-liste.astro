@@ -1,0 +1,326 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export const chronik = {
+  title: "Personenliste zu einem Familiennamen",
+  subtitle: "Alle Personen mit diesem Nachnamen im Pechgrün-Familienbuch",
+  date: "2026-01-24",
+  bereich: "Personen",
+  href: "/personen/ged-liste",
+  order: 30,
+};
+---
+
+<BaseLayout title={`${chronik.title} – Personenliste`}>
+  <article class="ged-page">
+    <header class="head">
+      <h1>{chronik.title}</h1>
+      <p class="subtitle">{chronik.subtitle}</p>
+      <p class="meta">{chronik.date}</p>
+    </header>
+
+    <section class="ged-liste">
+      <div class="toolbar" id="toolbar"></div>
+      <div class="list" id="list"></div>
+      <p class="hint" id="hint"></p>
+    </section>
+  </article>
+
+  <style is:global>
+    /* ---------- Page header (same pattern as other GED pages) ---------- */
+    .ged-page {
+      width: 100%;
+      margin: 0;
+    }
+
+    .ged-page .head {
+      margin-bottom: 1.2rem;
+    }
+
+    .ged-page .head h1 {
+      margin: 0 0 0.25rem 0;
+    }
+
+    .ged-page .head .subtitle {
+      margin: 0 0 0.4rem 0;
+      color: rgba(0, 0, 0, 0.65);
+      font-size: 1.05rem;
+    }
+
+    .ged-page .head .meta {
+      margin: 0;
+      font-size: 0.85rem;
+      color: rgba(0, 0, 0, 0.45);
+    }
+
+    /* ---------- Toolbar (sort toggle) ---------- */
+    .ged-liste .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 0.2rem 0 1.1rem 0; /* mehr Luft zur Liste */
+    }
+
+    /* plain text links, same typography as page */
+    .ged-liste .toolbar a.sortLink {
+      all: unset;                 /* kill global link/button styles */
+      cursor: pointer;
+
+      font: inherit;              /* <<< restore same font as rest of page */
+      font-size: 1rem;            /* <<< match list text size */
+      line-height: 1.2;
+
+      color: rgba(0, 0, 0, 0.65);
+      text-decoration: none;      /* no underline */
+    }
+
+    .ged-liste .toolbar a.sortLink:hover,
+    .ged-liste .toolbar a.sortLink:focus,
+    .ged-liste .toolbar a.sortLink:active {
+      color: rgba(0, 0, 0, 0.85);
+      text-decoration: none;      /* keep it calm */
+      outline: none;
+    }
+
+    .ged-liste .toolbar a.sortLink.active {
+      color: rgba(0, 0, 0, 0.95);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    /* ---------- One-line list ---------- */
+    .ged-liste {
+      margin: 0;
+      max-width: none;
+      font-family: inherit;
+      font-size: 1rem;
+      line-height: 3.8;
+    }
+
+    .ged-liste .list {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;   /* <<< das ist dein Zeilenabstand */
+    }
+
+    /* One person = EXACTLY one visual line */
+    .ged-liste .row {
+      margin: 0;
+      padding: 0;
+      line-height: 1.1;     /* optional */
+      white-space: nowrap;  /* wenn du weiterhin 1-Zeilig willst */
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Name: bold, black, NEVER underlined (incl. hover/visited/focus) */
+    .ged-liste a.nameLink,
+    .ged-liste a.nameLink:visited,
+    .ged-liste a.nameLink:hover,
+    .ged-liste a.nameLink:active,
+    .ged-liste a.nameLink:focus,
+    .ged-liste a.nameLink:focus-visible {
+      color: #111 !important;
+      font-weight: 700 !important;
+
+      text-decoration: none !important;
+      text-decoration-thickness: 0 !important;
+      text-underline-offset: 0 !important;
+
+      border-bottom: none !important;
+      box-shadow: none !important;
+      outline: none !important;
+
+      text-transform: none !important;
+      letter-spacing: normal !important;
+    }
+
+    /* inline separators + secondary tone */
+    .ged-liste .sep {
+      color: rgba(0, 0, 0, 0.45);
+    }
+
+    .ged-liste .metaText {
+      color: rgba(0, 0, 0, 0.85);
+      font-size: 1rem;
+    }
+
+    .ged-liste .metaText .light {
+      color: rgba(0, 0, 0, 0.55);
+    }
+
+    .hint {
+      margin: 0.7rem 0 0 0;
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.55);
+    }
+
+    @media (max-width: 900px) {
+      .ged-liste .nameCol {
+        flex-basis: 220px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .ged-liste .nameCol {
+        flex-basis: 160px;
+      }
+    }
+  </style>
+
+  <script type="module">
+    const DATA_BASE = "/data/ged";
+    const $ = (id) => document.getElementById(id);
+
+    function qsGet(key) {
+      return new URL(location.href).searchParams.get(key);
+    }
+
+    function qsSet(key, val) {
+      const u = new URL(location.href);
+      if (val == null || val === "") u.searchParams.delete(key);
+      else u.searchParams.set(key, val);
+      history.pushState({}, "", u);
+    }
+
+    function shortPlace(place) {
+      if (!place) return "";
+      return place
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .slice(0, 2)
+        .join(", ");
+    }
+
+    function showBorn(p) {
+      const d = p?.birth?.date || "?";
+      const pl = shortPlace(p?.birth?.place || "") || "";
+      return `${d}${pl ? " " + pl : ""}`;
+    }
+
+    function showDied(p) {
+      const d = p?.death?.date || "?";
+      const pl = shortPlace(p?.death?.place || "") || "";
+      return `${d}${pl ? " " + pl : ""}`;
+    }
+
+    function localeCompareDE(a, b) {
+      return String(a || "").localeCompare(String(b || ""), "de", { sensitivity: "base" });
+    }
+
+    function birthSortKey(p) {
+      const d = p?.birth?.date;
+      if (!d) return 99999999;
+
+      // remove qualifiers
+      const s = d.replace(/^ca\. |^vor /, "");
+
+      // DD.MM.YYYY
+      let m = s.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+      if (m) return Number(`${m[3]}${m[2]}${m[1]}`);
+
+      // MM.YYYY
+      m = s.match(/^(\d{2})\.(\d{4})$/);
+      if (m) return Number(`${m[2]}${m[1]}00`);
+
+      // YYYY
+      m = s.match(/^(\d{4})$/);
+      if (m) return Number(`${m[1]}0000`);
+
+      return 99999999;
+    }
+
+    function renderToolbar(sortMode) {
+      const bar = $("toolbar");
+      bar.innerHTML = `
+        <a href="#" class="sortLink ${sortMode === "az" ? "active" : ""}" data-mode="az">A–Z</a>
+        <a href="#" class="sortLink ${sortMode === "year" ? "active" : ""}" data-mode="year">Geburtsdatum</a>
+      `;
+
+      bar.querySelectorAll("a.sortLink").forEach((a) => {
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          const mode = a.getAttribute("data-mode");
+          qsSet("sort", mode);
+          load();
+        });
+      });
+    }
+
+    async function load() {
+      const sn = qsGet("sn");
+      const az = qsGet("az"); // for back context in detail view
+      const sortMode = qsGet("sort") || "az";
+
+      const list = $("list");
+      const hint = $("hint");
+
+      hint.textContent = "";
+      list.innerHTML = "";
+
+      renderToolbar(sortMode);
+
+      if (!sn) {
+        hint.textContent = "Bitte zuerst auf /personen/ged-namen einen Familiennamen auswählen.";
+        return;
+      }
+
+      const [surnameToPersons, people] = await Promise.all([
+        fetch(`${DATA_BASE}/surnameToPersons.json`).then((r) => r.json()),
+        fetch(`${DATA_BASE}/people.json`).then((r) => r.json()),
+      ]);
+
+      const ids = (surnameToPersons[sn] || []).slice();
+      const persons = ids.map((id) => people[id]).filter(Boolean);
+
+      // Sort (do NOT rely on JSON pre-sort)
+      persons.sort((pa, pb) => {
+        if (sortMode === "year") {
+          const ka = birthSortKey(pa);
+          const kb = birthSortKey(pb);
+          if (ka !== kb) return ka - kb;
+          return localeCompareDE(pa?.name?.display || "", pb?.name?.display || "");
+        }
+        // default: alphabetical
+        return localeCompareDE(pa?.name?.display || "", pb?.name?.display || "");
+      });
+
+      for (const p of persons) {
+        const id = p.id;
+
+        const href =
+          `/internal/ged-person?id=${encodeURIComponent(id)}` +
+          `&sn=${encodeURIComponent(sn)}` +
+          `&az=${encodeURIComponent(az || "")}`;
+
+        const born = showBorn(p);
+        const died = showDied(p);
+
+        const infoParts = [
+          `<span class="metaText"><span class="light">*</span>${born}</span>`,
+          `<span class="metaText"><span class="light">†</span>${died}</span>`,
+        ];
+
+        const row = document.createElement("div");
+        row.className = "row";
+        row.innerHTML = `
+          <a class="nameLink" href="${href}">${p.name.display}</a><span class="sep">, </span>
+          ${infoParts.join(`<span class="sep">, </span>`)}
+        `;
+        list.appendChild(row);
+      }
+
+      hint.textContent = "Tipp: Klick auf eine Person öffnet die Detailansicht.";
+    }
+
+    window.onpopstate = () => load();
+    load().catch((err) => {
+      console.error(err);
+      const hint = document.getElementById("hint");
+      if (hint) hint.textContent = String(err);
+    });
+  </script>
+</BaseLayout>

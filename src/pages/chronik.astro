@@ -124,10 +124,12 @@ const pageModules = import.meta.glob("./**/*.astro", { eager: true }) as Record<
 const astroItems = Object.entries(pageModules)
   .filter(
     ([path]) =>
-      !path.endsWith("/chronik.astro") && path !== "./chronik.astro",
+      !path.endsWith("/chronik.astro") &&
+      path !== "./chronik.astro" &&
+      !path.startsWith("./internal/"),
   )
   .map(([, mod]) => mod?.chronik)
-  .filter(Boolean)
+  .filter((c: any) => c && !c.hidden)
   .map((c: any) => ({
     kind: "page" as const,
     title: String(c.title ?? ""),
