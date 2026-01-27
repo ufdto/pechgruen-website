@@ -259,7 +259,7 @@ export const chronik = {
         const row = document.createElement("div");
         row.className = "nameRow";
         row.innerHTML = `
-          <a class="nameLink" href="${href}">
+          <a class="nameLink" href="${href}" data-astro-reload>
             ${surnameDisplay(sn)} <span class="count">(${ids.length})</span>
           </a>
         `;
@@ -295,4 +295,6 @@ export const chronik = {
       $("meta").textContent = String(err);
     });
   </script>
+  
 </BaseLayout>
+

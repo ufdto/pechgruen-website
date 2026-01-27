@@ -3,17 +3,40 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import textHtml from "../assets/texte/a-hooch-aaf-unna-dorf.html?raw";
 
 export const chronik = {
-  title: "A Hooch aaf unna Dorf",
-  subtitle: "Ein Dorf erzählt von sich selbst",
+  title: "A Hooch aaf unna Dorf uu d' Pechgräina Leit",
+  subtitle: "Erzählt und aufgeschrieben von Erich Heinzl",
   date: "2025-12-21",
+  updated: "2026-01-27",
   bereich: "Texte, Stimmen und Erinnerungen",
   href: "/a-hooch-aaf-unna-dorf",
   order: 2,
 };
 
-const author = "Erich Heinzl";
 const sourceShort =
   "Aus: Pechgrün am Fuße des Erzgebirges – ein verschüttetes Dorf. Geschichte und Erinnerungen, Band 3 (1998), hg. von Anton Strunz und Erich Heinzl.";
+
+function escapeHtml(s: string): string {
+  return s
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function linkPersons(rawHtml: string): string {
+  // [[I500020|Fellner Seff]]
+  const re = /\[\[([A-Za-z]\d+)\|([^\]]+?)\]\]/g;
+
+  return rawHtml.replace(re, (_match, id, label) => {
+    const safeId = encodeURIComponent(id);
+    const safeLabel = escapeHtml(label);
+
+    return `<a href="/internal/ged-person?id=${safeId}" class="person-link" target="_blank" rel="noopener">${safeLabel}</a>`;
+  });
+}
+
+const textHtmlLinked = linkPersons(textHtml);
 ---
 
 <BaseLayout title={chronik.title}>
@@ -23,17 +46,11 @@ const sourceShort =
       <p class="subtitle">{chronik.subtitle}</p>
 
       <p class="meta">
-        <span class="author">{author}</span>
-        <span class="dot">·</span>
         <span class="source">{sourceShort}</span>
-      </p>
-
-      <p class="intro">
-        Ein Text aus den Pechgrüner Erinnerungsbänden.
       </p>
     </header>
 
-    <section class="text" lang="de" set:html={textHtml} />
+    <section class="text" lang="de" set:html={textHtmlLinked} />
   </article>
 </BaseLayout>
 
@@ -64,24 +81,6 @@ const sourceShort =
     color: rgba(0, 0, 0, 0.6);
   }
 
-  .author {
-    font-weight: 600;
-    color: rgba(0, 0, 0, 0.7);
-  }
-
-  .dot {
-    margin: 0 0.35rem;
-    opacity: 0.6;
-  }
-
-  .intro {
-    margin-top: 0.4rem;
-    margin-bottom: 1.4rem;
-    font-size: 0.9rem;
-    line-height: 1.4;
-    color: rgba(0, 0, 0, 0.55);
-  }
-
   /* ===== Fließtext ===== */
   .text {
     margin-top: 1.6rem;
@@ -100,6 +99,11 @@ const sourceShort =
 
   .text :global(p) {
     margin: 0 0 0.9rem 0;
+    hyphens: none;
+    word-break: normal;
+    overflow-wrap: break-word;
+    word-spacing: 0.03em;
+    line-height: 1.55;
   }
 
   /* ===== Abschnitt / "Seite" =====
@@ -111,7 +115,7 @@ const sourceShort =
   .text :global(p:nth-of-type(5n + 1)) {
     margin-top: 6rem;
     padding-top: 1.6rem;
-    border-top: 1px solid rgba(0, 0, 0, 0.10);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
 
     position: relative;
     counter-increment: page;
@@ -144,4 +148,18 @@ const sourceShort =
   .text :global(p:nth-of-type(1))::before {
     content: none;
   }
+
+  :global(.text-ort .text a.person-link) {
+    text-decoration: none !important;
+    color: inherit !important;
+    font-weight: 500;   /* minimal stärker als normal (400) */
+  }
+
+  :global(.text-ort .text a.person-link:hover),
+  :global(.text-ort .text a.person-link:focus-visible) {
+    text-decoration: underline !important;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+
 </style>
